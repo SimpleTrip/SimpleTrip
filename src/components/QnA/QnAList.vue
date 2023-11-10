@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { list } from '@/api/QnA.js';
-import QnADetail from '@/components/QnA/QnADetail.vue';
+import QnAItem from '@/components/QnA/QnAItem.vue';
 
 const qnaList = ref([]);
 const currentPage = ref(2);
@@ -39,16 +39,17 @@ const getList = () => {
     </div>
 
     <div class="table-responsive">
-      <table class="table align-items-center mb-0">
+      <table class="table align-items-center mb-0 table-hover">
         <thead>
           <tr>
             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">NO</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">AUTHOR</th>
             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">QnA</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">AUTHOR</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">ANS</th>
           </tr>
         </thead>
         <tbody>
-          <QnADetail v-for="qna in qnaList" :key="qna.qnaNo" :qna="qna" />
+          <QnAItem v-for="qna in qnaList" :key="qna.qnaNo" :qna="qna" />
         </tbody>
       </table>
       <br />
