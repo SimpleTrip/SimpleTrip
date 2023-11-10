@@ -57,6 +57,11 @@ const router = createRouter({
           name: 'QnAModify',
           component: () => import('@/components/QnA/QnAModify.vue'),
         },
+        {
+          path: 'admin/answer',
+          name: 'QnAAnswer',
+          component: () => import('@/components/QnA/QnAAnswer.vue'),
+        },
       ],
     },
     {
