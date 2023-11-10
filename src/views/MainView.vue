@@ -19,8 +19,8 @@ onUnmounted(() => {
       <div class="container">
         <div class="row">
           <div class="col-lg-7 text-center mx-auto position-relative">
-            <!-- <h1 class="text-white pt-3 mt-n5 me-2" :style="{ display: 'inline-block ' }">Material Kit 2</h1>
-            <p class="lead text-white px-5 mt-3" :style="{ fontWeight: '500' }">Start the Development With Bootstrap 5 Design System inspired by Material Design.</p> -->
+            <h1 class="text-white pt-3 mt-n5 me-2" :style="{ display: 'inline-block ' }">ENJOY TRIP WITH SIMPLE TRIP</h1>
+            <p class="lead text-white px-5 mt-3" :style="{ fontWeight: '500' }">SIMPLE TRIP과 함께 즐거운 여행을 도전해보세요!</p>
           </div>
         </div>
       </div>
