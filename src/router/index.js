@@ -12,21 +12,21 @@ const router = createRouter({
       path: '/board',
       name: 'board',
       component: () => import('@/views/BoardView.vue'),
-      redirect: { name: 'list' },
+      redirect: { name: 'boardList' },
       children: [
         {
           path: 'list',
-          name: 'list',
+          name: 'boardList',
           component: () => import('@/components/board/BoardList.vue'),
         },
         {
           path: 'write',
-          name: 'write',
+          name: 'boardWrite',
           component: () => import('@/components/board/BoardWrite.vue'),
         },
         {
           path: 'detail',
-          name: 'detail',
+          name: 'boardDetail',
           component: () => import('@/components/board/BoardDetail.vue'),
         },
       ],
@@ -35,17 +35,27 @@ const router = createRouter({
       path: '/QnA',
       name: 'QnA',
       component: () => import('@/views/QnAView.vue'),
-      redirect: { name: 'QnAlist' },
+      redirect: { name: 'QnAList' },
       children: [
         {
           path: 'list',
-          name: 'QnAlist',
+          name: 'QnAList',
           component: () => import('@/components/QnA/QnAList.vue'),
         },
         {
           path: 'detail',
-          name: 'QnAdetail',
+          name: 'QnADetail',
           component: () => import('@/components/QnA/QnADetail.vue'),
+        },
+        {
+          path: 'write',
+          name: 'QnAWrite',
+          component: () => import('@/components/QnA/QnAWrite.vue'),
+        },
+        {
+          path: 'modify',
+          name: 'QnAModify',
+          component: () => import('@/components/QnA/QnAModify.vue'),
         },
       ],
     },

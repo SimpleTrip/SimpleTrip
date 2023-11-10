@@ -3,10 +3,10 @@
 <template>
   <!-- TO BE DELETED -->
   <p>Write</p>
-  <RouterLink class="btn btn-outline-primary" :to="{ name: 'boardDetail' }" type="button">router test</RouterLink>
+  <RouterLink class="btn btn-outline-primary" :to="{ name: 'detail' }" type="button">router test</RouterLink>
   <br />
 
-  <h2 class="text-center">Write Board</h2>
+  <h2 class="text-center">Modify QnA</h2>
 
   <div class="d-flex justify-content-center gap-2">
     <div class="d-flex flex-column align-items-center container">
@@ -32,14 +32,16 @@
         <h5>Content</h5>
         <div class="input-group input-group-outline">
           <label class="form-label"></label>
-          <textarea class="text-area form-contol form-control-md" rows="5" cols="37" style="width: 100%"></textarea>
+          <div>
+            <textarea class="text-area form-contol form-control-md" rows="5" cols="37"></textarea>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="d-flex justify-content-center gap-2">
-    <router-link :to="{ name: 'boardWrite' }" class="btn btn-success btn-md">Write</router-link>
+    <router-link :to="{ name: 'write' }" class="btn btn-success btn-md">Modify</router-link>
     <button class="btn btn-outline-success btn-md ms-2 me-2">Clear</button>
   </div>
 </template>
