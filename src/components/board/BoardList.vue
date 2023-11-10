@@ -10,13 +10,7 @@ const isCurrentPage = function (page) {
 
 <template>
   <div>
-    <!-- TO BE DELETED -->
-    <p>list</p>
-    <RouterLink class="btn btn-outline-primary" :to="{ name: 'boardDetail' }" type="button">router test</RouterLink>
-    <br />
-
     <h2 class="text-center">Board List</h2>
-
     <div class="d-flex justify-content-between">
       <div class="ms-2">
         <router-link :to="{ name: 'boardWrite' }" class="btn btn-outline-success btn-md">Write</router-link>
@@ -31,7 +25,7 @@ const isCurrentPage = function (page) {
         <button class="btn btn-success btn-md ms-2 me-2">Search</button>
       </div>
     </div>
-
+      
     <div class="table-responsive">
       <table class="table align-items-center mb-0">
         <thead>

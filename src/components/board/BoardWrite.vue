@@ -1,13 +1,7 @@
 <script setup></script>
 
 <template>
-  <!-- TO BE DELETED -->
-  <p>Write</p>
-  <RouterLink class="btn btn-outline-primary" :to="{ name: 'boardDetail' }" type="button">router test</RouterLink>
-  <br />
-
   <h2 class="text-center">Write Board</h2>
-
   <div class="d-flex justify-content-center gap-2">
     <div class="d-flex flex-column align-items-center container">
       <div class="col-6 mb-2 mt-2">
