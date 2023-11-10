@@ -1,16 +1,28 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { list } from '@/api/QnA.js';
 import QnADetail from '@/components/QnA/QnADetail.vue';
 
+const qnaList = ref([]);
 const currentPage = ref(2);
 const isCurrentPage = function (page) {
   return currentPage.value == page;
+};
+
+onMounted(() => {
+  getList();
+});
+
+const getList = () => {
+  list(({ data }) => {
+    qnaList.value = data;
+  });
 };
 </script>
 
 <template>
   <div>
-    <h2 class="text-center">QnA Board</h2>
+    <h2 class="text-center">QnA</h2>
     <div class="d-flex justify-content-between">
       <div class="ms-2">
         <router-link :to="{ name: 'QnAWrite' }" class="btn btn-outline-success btn-md">Write</router-link>
@@ -30,14 +42,13 @@ const isCurrentPage = function (page) {
       <table class="table align-items-center mb-0">
         <thead>
           <tr>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">ARTICLE NO</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">NO</th>
             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">AUTHOR</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">ARTICLE</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">EDIT DATE</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">QnA</th>
           </tr>
         </thead>
         <tbody>
-          <QnADetail v-for="i in 5" :key="i"></QnADetail>
+          <QnADetail v-for="qna in qnaList" :key="qna.qnaNo" :qna="qna" />
         </tbody>
       </table>
       <br />
