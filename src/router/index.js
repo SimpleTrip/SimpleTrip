@@ -20,6 +20,11 @@ const router = createRouter({
           component: () => import('@/components/board/BoardList.vue'),
         },
         {
+          path: 'write',
+          name: 'write',
+          component: () => import('@/components/board/BoardWrite.vue'),
+        },
+        {
           path: 'detail',
           name: 'detail',
           component: () => import('@/components/board/BoardDetail.vue'),
