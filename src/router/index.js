@@ -60,7 +60,6 @@ const router = createRouter({
       ],
     },
     {
-<<<<<<< HEAD
       path: '/spot',
       name: 'spot',
       component: () => import('@/views/SpotView.vue'),
@@ -70,7 +69,10 @@ const router = createRouter({
           path: 'register',
           name: 'spotRegister',
           component: () => import('@/components/spot/spotRegister.vue'),
-=======
+        }
+      ],
+    },
+    {
       path: '/Map',
       name: 'map',
       component: () => import('@/views/MapView.vue'),
@@ -80,7 +82,6 @@ const router = createRouter({
           path: 'test',
           name: 'MapTest',
           component: () => import('@/components/Map/Test.vue'),
->>>>>>> 0a050cc22863af51697e4960fdb046271918844b
         },
       ],
     },
