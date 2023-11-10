@@ -26,6 +26,24 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/QnA',
+      name: 'QnA',
+      component: () => import('@/views/QnAView.vue'),
+      redirect: { name: 'QnAlist' },
+      children: [
+        {
+          path: 'list',
+          name: 'QnAlist',
+          component: () => import('@/components/QnA/QnAList.vue'),
+        },
+        {
+          path: 'detail',
+          name: 'QnAdetail',
+          component: () => import('@/components/QnA/QnADetail.vue'),
+        },
+      ],
+    },
   ],
 });
 
