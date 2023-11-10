@@ -59,6 +59,19 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/Map',
+      name: 'map',
+      component: () => import('@/views/MapView.vue'),
+      redirect: { name: 'MapTest' },
+      children: [
+        {
+          path: 'test',
+          name: 'MapTest',
+          component: () => import('@/components/Map/Test.vue'),
+        },
+      ],
+    },
   ],
 });
 
