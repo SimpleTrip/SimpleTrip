@@ -1,16 +1,14 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap';
+import './assets/css/nucleo-icons.css';
+import './assets/css/nucleo-svg.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
 import App from './App.vue';
 import router from './router';
 
-import './assets/css/nucleo-icons.css';
-import './assets/css/nucleo-svg.css';
-
 import materialKit from './material-kit';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap';
 
 const app = createApp(App);
 

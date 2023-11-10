@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <p>QnA</p>
+    <div style="height: 120px"></div>
     <RouterView />
   </div>
 </template>
