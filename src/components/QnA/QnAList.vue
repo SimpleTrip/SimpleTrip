@@ -21,7 +21,7 @@ const getList = () => {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <h2 class="text-center">QnA</h2>
     <div class="d-flex justify-content-between">
       <div class="ms-2">

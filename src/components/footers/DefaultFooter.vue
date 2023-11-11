@@ -54,7 +54,7 @@ defineProps({
           </a>
         </div>
         <div class="col-lg-8 mx-auto text-center mb-4 mt-2">
-          <a v-for="{ icon, link } of socials" :key="link" :href="link" target="_blank" class="text-secondary me-xl-4 me-4" v-html="icon"> </a>
+          <a v-for="{ icon, link } of socials" :key="link" :href="link" target="_blank" class="text-success me-xl-4 me-4" v-html="icon"> </a>
         </div>
       </div>
       <div class="row">
