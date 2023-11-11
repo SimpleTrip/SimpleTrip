@@ -68,13 +68,18 @@ const router = createRouter({
       path: '/spot',
       name: 'spot',
       component: () => import('@/views/SpotView.vue'),
-      redirect: { name: 'spotRegister' },
+      redirect: { name: 'spotSearch' },
       children: [
+        {
+          path: 'search',
+          name: 'spotSearch',
+          component: () => import('@/components/spot/spotSearch.vue'),
+        },
         {
           path: 'register',
           name: 'spotRegister',
           component: () => import('@/components/spot/spotRegister.vue'),
-        }
+        },
       ],
     },
     {
