@@ -11,7 +11,7 @@ const user = ref({
 
 const onClickWrite = () => {
   writeQna();
-  router.push({ name: 'QnAList' });
+  alert('QnA가 작성 되었습니다.', router.push({ name: 'QnAList' }));
 };
 
 const writeQna = () => {

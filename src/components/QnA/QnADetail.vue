@@ -33,14 +33,14 @@ const deleteAns = () => {
     console.log(data);
   });
 
-  router.go(0);
+  alert('답변이 삭제 되었습니다.', router.go(0));
 };
 
 const deleteQna = () => {
   deleteQnA(qnaNo.value, ({ data }) => {
     console.log(data);
   });
-  router.replace({ name: 'QnAList' });
+  alert('QnA가 삭제 되었습니다.', router.replace({ name: 'QnAList' }));
 };
 </script>
 
