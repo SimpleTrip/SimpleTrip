@@ -14,7 +14,7 @@ const user = ref({
 
 const onClickAnswer = () => {
   answerQna();
-  router.push({ name: 'QnADetail', query: { qnaNo: qnaNo.value } });
+  alert('답변 작성/수정이 완료 되었습니다.', router.push({ name: 'QnADetail', query: { qnaNo: qnaNo.value } }));
 };
 
 const answerQna = () => {
