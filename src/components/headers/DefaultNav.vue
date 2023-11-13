@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink } from 'vue-router';
-import { ref, watch } from 'vue';
 </script>
 
 <template>
@@ -18,7 +17,7 @@ import { ref, watch } from 'vue';
       <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" id="navCollapse">
         <ul class="navbar-nav navbar-nav-hover ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#">커뮤니티</a>
+            <router-link class="nav-link" :to="{ name: 'spot' }">여행지</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" :to="{ name: 'board' }">게시판</router-link>
