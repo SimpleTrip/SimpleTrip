@@ -25,6 +25,16 @@ const regionCode = ref("");
 const contentTypeCode = ref("");
 
 onMounted(() => {
+    if (window.kakao && window.kakao.maps) {
+        console.log("");
+    } else {
+        const script = document.createElement("script");
+        script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+            }&libraries=services,clusterer`;
+        /* global kakao */
+        document.head.appendChild(script);
+    }
+
     getSido(({ data }) => {
         let sidoList = data.response.body.items.item;
         sidoList.forEach((city) => cities.value.push(city));
@@ -95,22 +105,22 @@ let displayMarkers = function (list) {
         let lat = spot.mapy
         let lng = spot.mapx
 
-        let content = 
-        '<div class="wrap">' + 
-        '    <div class="info">' + 
-        '        <div class="title">' + 
-        `            ${spot.title}` +
-        '        </div>' + 
-        '        <div class="body">' + 
-        '            <div class="img">' +
-        `                <img src="${spot.firstimage}" width="73" height="70">` +
-        '           </div>' + 
-        '            <div class="desc">' + 
-        `                <div class="ellipsis">${spot.addr1}</div>` +  
-        '            </div>' + 
-        '        </div>' + 
-        '    </div>' +    
-        '</div>';
+        let content =
+            '<div class="wrap">' +
+            '    <div class="info">' +
+            '        <div class="title">' +
+            `            ${spot.title}` +
+            '        </div>' +
+            '        <div class="body">' +
+            '            <div class="img">' +
+            `                <img src="${spot.firstimage}" width="73" height="70">` +
+            '           </div>' +
+            '            <div class="desc">' +
+            `                <div class="ellipsis">${spot.addr1}</div>` +
+            '            </div>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>';
 
         let customOverlay = new kakao.maps.CustomOverlay({
             map: map.value,
@@ -195,12 +205,12 @@ let setMap = function (list) {
 </script>
 
 <template>
-    <h2 class="text-center mb-5">Search Spot</h2>
+    <h2 class="text-center mb-5">여행지 검색</h2>
     <div class="d-flex flex-column justify-content-center align-items-center">
         <div class="input-group mb-3">
             <div class="d-flex justify-content-center align-items-center container">
                 <div class="d-flex flex-column align-items-center container col-2">
-                    <label for="city">City</label>
+                    <label for="city">도시</label>
                     <select class="select-option form-select text-center" id="city" v-model="cityCode" @change="cityFunc">
                         <option v-for="city in cities" :key="city.code" :value="city.code">
                             {{ city.name }}
@@ -208,7 +218,7 @@ let setMap = function (list) {
                     </select>
                 </div>
                 <div class="d-flex flex-column align-items-center container  col-2">
-                    <label for="region">Region</label>
+                    <label for="region">지역</label>
                     <select class="select-option form-select text-center" id="region" v-model="regionCode"
                         @change="regionFunc">
                         <option v-for="region in regions" :key="region.code" :value="region.code">
@@ -217,7 +227,7 @@ let setMap = function (list) {
                     </select>
                 </div>
                 <div class="d-flex flex-column align-items-center container  col-2">
-                    <label for="type">Type</label>
+                    <label for="type">유형</label>
                     <select class="select-option form-select text-center" id="type" v-model="contentTypeCode"
                         @change="contentFunc">
                         <option v-for="contentType in contentTypes" :key="contentType.code" :value="contentType.code">
