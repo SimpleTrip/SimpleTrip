@@ -21,6 +21,9 @@ import { RouterLink } from 'vue-router';
       <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" id="navCollapse">
         <ul class="navbar-nav navbar-nav-hover ms-auto">
           <li class="nav-item">
+            <router-link class="nav-link" :to="{ name: 'login' }">로그인</router-link>
+          </li>
+          <li class="nav-item">
             <router-link class="nav-link" :to="{ name: 'spot' }">여행지</router-link>
           </li>
           <li>
