@@ -78,12 +78,12 @@ const router = createRouter({
         {
           path: 'search',
           name: 'spotSearch',
-          component: () => import('@/components/spot/spotSearch.vue'),
+          component: () => import('@/components/spot/SpotSearch.vue'),
         },
         {
           path: 'register',
           name: 'spotRegister',
-          component: () => import('@/components/spot/spotRegister.vue'),
+          component: () => import('@/components/spot/SpotRegister.vue'),
         },
       ],
     },

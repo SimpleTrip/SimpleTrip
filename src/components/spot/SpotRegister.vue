@@ -1,5 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue"
+
+const registHandler = function() {
+    console.log("저장!")
+}
+
 onMounted(() => {
 
     if (window.kakao && window.kakao.maps) {
@@ -117,7 +122,7 @@ const post = ref({
                     </div>
                 </div>
                 <div class="d-flex justify-content-center gap-2 mt-2">
-                    <router-link :to="{ name: 'boardWrite' }" class="btn btn-success btn-md">Register</router-link>
+                    <button class="btn btn-success btn-md" @click="registHandler">저장</button>
                 </div>
             </div>
         </div>
