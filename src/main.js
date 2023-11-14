@@ -9,7 +9,6 @@ import App from './App.vue';
 import router from './router';
 
 import materialKit from './material-kit';
-
 const app = createApp(App);
 
 app.use(createPinia());

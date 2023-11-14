@@ -95,6 +95,28 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: '/user',
+      name: 'user',
+      component: () => import('@/views/UserView.vue'),
+      children: [
+        {
+          path: 'info',
+          name: 'info',
+          component: () => import('@/components/user/UserInfo.vue'),
+        },
+        {
+          path: 'login',
+          name: 'login',
+          component: () => import('@/components/user/UserLogin.vue'),
+        },
+        {
+          path: 'signup',
+          name: 'signup',
+          component: () => import('@/components/user/UserSignUp.vue'),
+        },
+      ],
+    },
   ],
 });
 
