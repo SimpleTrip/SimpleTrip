@@ -1,10 +1,9 @@
 <script setup>
-
 import { ref, onMounted } from 'vue';
 
 import ArticleItem from '@/components/articles/ArticleItem.vue';
 
-import { getArticleList } from '@/api/article.js'
+import { getArticleList } from '@/api/article.js';
 
 const articleList = ref([]);
 
@@ -13,16 +12,15 @@ const isCurrentPage = function (page) {
   return currentPage.value == page;
 };
 
-const setArticleList = function() {
+const setArticleList = function () {
   getArticleList(({ data }) => {
-    articleList.value = data
-  })
-}
+    articleList.value = data;
+  });
+};
 
 onMounted(() => {
-  setArticleList()
-})
-
+  setArticleList();
+});
 </script>
 
 <template>
@@ -42,9 +40,9 @@ onMounted(() => {
         <button class="btn btn-success btn-md ms-2">글 검색</button>
       </div>
     </div>
-      
+
     <div class="table-responsive">
-      <table class="table align-items-center mb-0">
+      <table class="table align-items-center mb-0 table-hover">
         <thead>
           <tr>
             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-2">글 번호</th>

@@ -51,8 +51,10 @@ const deleteQna = () => {
     <div class="d-flex flex-column align-items-center container">
       <div class="col-6 mb-2 mt-2">
         <h5>User ID</h5>
-        <div class="input-group input-group-outline">
-          <p>{{ qna.questionUserId }}</p>
+        <div class="input-group input-group-outline form-control form-control-md">
+          <div class="col form-control form-control-md border rounded">
+            {{ qna.questionUserId }}
+          </div>
         </div>
       </div>
     </div>
@@ -62,8 +64,10 @@ const deleteQna = () => {
     <div class="d-flex flex-column align-items-center container">
       <div class="col-6 mb-2 mt-2">
         <h5>Question</h5>
-        <div class="input-group input-group-outline">
-          <p>{{ qna.question }}</p>
+        <div class="input-group input-group-outline form-control form-control-md">
+          <div class="col form-control form-control-md border rounded">
+            {{ qna.question }}
+          </div>
         </div>
       </div>
     </div>
@@ -73,8 +77,10 @@ const deleteQna = () => {
     <div class="d-flex flex-column align-items-center container">
       <div class="col-6 mb-2 mt-2">
         <h5>Answer</h5>
-        <div class="input-group input-group-outline">
-          <p>{{ qna.answer }}</p>
+        <div class="input-group input-group-outline form-control form-control-md">
+          <div class="col form-control form-control-md border rounded">
+            {{ qna.answer }}
+          </div>
         </div>
       </div>
     </div>
@@ -84,8 +90,10 @@ const deleteQna = () => {
     <div class="d-flex flex-column align-items-center container">
       <div class="col-6 mb-2 mt-2">
         <h5>Admin ID</h5>
-        <div class="input-group input-group-outline">
-          <p>{{ qna.answerAdminId }}</p>
+        <div class="input-group input-group-outline form-control form-control-md">
+          <div class="col form-control form-control-md border rounded">
+            {{ qna.answerAdminId }}
+          </div>
         </div>
       </div>
     </div>
