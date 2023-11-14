@@ -1,40 +1,40 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getArticle, modifyArticle } from '@/api/article.js'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { getArticle, modifyArticle } from '@/api/article.js';
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const article = ref({})
-const articleId = ref(route.params.articleId)
+const article = ref({});
+const articleId = ref(route.params.articleId);
 
 const setArticle = function () {
   getArticle(articleId.value, ({ data }) => {
-    article.value = data
-  })
-}
+    article.value = data;
+  });
+};
 
 const modifyHandler = function () {
-  const response = confirm('수정하시겠습니까?')
+  const response = confirm('수정하시겠습니까?');
   if (response) {
-    modifyArticle(articleId.value, article.value)
-    alert('수정 완료')
-    router.push({ name: 'articleList'})
+    modifyArticle(articleId.value, article.value);
+    alert('수정 완료');
+    router.push({ name: 'articleList' });
   } else {
-    alert('수정 실패')
-  }  
-}
+    alert('수정 실패');
+  }
+};
 
-const resetArticle = function() {
-  article.value.articleTitle = ''
-  article.value.articleContent = ''
-  article.value.userId = ''
-}
+const resetArticle = function () {
+  article.value.articleTitle = '';
+  article.value.articleContent = '';
+  article.value.userId = '';
+};
 
 onMounted(() => {
-  setArticle()
-})
+  setArticle();
+});
 </script>
 
 <template>
@@ -46,7 +46,7 @@ onMounted(() => {
         <h5>작성자</h5>
         <div class="input-group input-group-outline">
           <label class="form-label"></label>
-          <input readonly type="text" id="text" class="form-control form-control-md" v-model="article.userId"/>
+          <input readonly type="text" id="text" class="form-control form-control-md" v-model="article.userId" />
         </div>
       </div>
     </div>
@@ -58,7 +58,7 @@ onMounted(() => {
         <h5>제목</h5>
         <div class="input-group input-group-outline">
           <label class="form-label"></label>
-          <input type="text" id="text" class="form-control form-control-md" v-model="article.articleTitle"/>
+          <input type="text" id="text" class="form-control form-control-md" v-model="article.articleTitle" />
         </div>
       </div>
     </div>

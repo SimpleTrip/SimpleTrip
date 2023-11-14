@@ -1,34 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getArticle, deleteArticle } from '@/api/article.js'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { getArticle, deleteArticle } from '@/api/article.js';
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const article = ref({})
-const articleId = ref(route.params.articleId)
+const article = ref({});
+const articleId = ref(route.params.articleId);
 
 const setArticle = function () {
   getArticle(articleId.value, ({ data }) => {
-    article.value = data
-  })
-}
+    article.value = data;
+  });
+};
 
 const deleteHandler = function () {
-  const response = confirm('삭제하시겠습니까?')
+  const response = confirm('삭제하시겠습니까?');
   if (response) {
-    deleteArticle(article.value.articleId)
-    alert('삭제 완료')
-    router.push({ name: 'articleList'})
+    deleteArticle(article.value.articleId);
+    alert('삭제 완료');
+    router.push({ name: 'articleList' });
   } else {
-    alert('삭제 실패')
+    alert('삭제 실패');
   }
-}
+};
 
 onMounted(() => {
-  setArticle()
-})
+  setArticle();
+});
 </script>
 
 <template>

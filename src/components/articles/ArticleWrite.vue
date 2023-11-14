@@ -1,32 +1,32 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { writeArticle } from '@/api/article.js'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { writeArticle } from '@/api/article.js';
 
-const router = useRouter()
+const router = useRouter();
 
 const article = ref({
   articleTitle: '',
   articleContent: '',
-  userId: ''
-})
+  userId: '',
+});
 
-const writeHandler = function() {
-  const response = confirm('등록하시겠습니까?')
+const writeHandler = function () {
+  const response = confirm('등록하시겠습니까?');
   if (response) {
-    writeArticle(article.value)
-    alert('등록 완료')
-    router.push({ name: 'articleList'})
+    writeArticle(article.value);
+    alert('등록 완료');
+    router.push({ name: 'articleList' });
   } else {
-    alert('등록 실패')
+    alert('등록 실패');
   }
-}
+};
 
-const resetArticle = function() {
-  article.value.articleTitle = ''
-  article.value.articleContent = ''
-  article.value.userId = ''
-}
+const resetArticle = function () {
+  article.value.articleTitle = '';
+  article.value.articleContent = '';
+  article.value.userId = '';
+};
 </script>
 
 <template>

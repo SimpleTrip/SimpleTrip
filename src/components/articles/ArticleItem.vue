@@ -1,17 +1,17 @@
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
-  article: Object
-})
+  article: Object,
+});
 
-const router = useRouter()
-const routeArticleDetail = function() {
-  console.log('test')
-  console.log(props.article)
-  console.log(props.article.articleId)
-  router.push({ name: 'articleDetail', params: { articleId: props.article.articleId } })
-}
+const router = useRouter();
+const routeArticleDetail = function () {
+  console.log('test');
+  console.log(props.article);
+  console.log(props.article.articleId);
+  router.push({ name: 'articleDetail', params: { articleId: props.article.articleId } });
+};
 </script>
 
 <template>
