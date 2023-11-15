@@ -12,9 +12,11 @@ const reWriteInput = ref('');
 const isReWrite = ref(false);
 const clickReWriteIcon = () => {
   isReWrite.value = !isReWrite.value;
+  reWriteInput.value = '';
 };
 
 const clickReWrite = async () => {
+  props.comment.commentContent = reWriteInput.value;
   await rewriteComment(props.comment, ({ data }) => {});
   clickReWriteIcon();
   emit('rewriteComment');
@@ -39,7 +41,7 @@ const clickDelete = async () => {
     <div class="content" v-else>
       <div class="input-group input-group-outline" style="margin-right: 6px">
         <label class="form-label"></label>
-        <input :placeholder="props.comment.commentContent" type="text" id="text" class="form-control form-control-sm" v-model="props.comment.commentContent" />
+        <input :placeholder="props.comment.commentContent" type="text" id="text" class="form-control form-control-sm" v-model="reWriteInput" />
       </div>
       <i class="fas fa-times" style="font-size: 14px; margin-right: 6px; color: red" @click="clickReWriteIcon"></i>
       <i class="fas fa-check" style="font-size: 14px; color: green" @click="clickReWrite"></i>

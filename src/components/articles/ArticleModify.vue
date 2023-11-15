@@ -29,7 +29,6 @@ const modifyHandler = function () {
 const resetArticle = function () {
   article.value.articleTitle = '';
   article.value.articleContent = '';
-  article.value.userId = '';
 };
 
 onMounted(() => {
