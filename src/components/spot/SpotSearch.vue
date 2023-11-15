@@ -1,10 +1,13 @@
 <script setup>
 import { ref, computed, onMounted, toRaw } from "vue"
-
 import { getSido, getGugun, getMap } from '@/api/Map.js'
+import { addFavorite, deleteFavorite } from '@/api/favorite.js'
 
-const cities = ref([]);
-const regions = ref([]);
+// nav-pill
+import setNavPills from "@/assets/js/nav-pills.js";
+
+const cities = ref([])
+const regions = ref([])
 const contentTypes = ref([
     { code: "12", name: "관광지" },
     { code: "14", name: "문화시설" },
@@ -20,13 +23,18 @@ const cityName = computed(() => {
     const selected = cities.value.find(city => city.code === cityCode.value)
     return selected.name;
 })
-const cityCode = ref("");
-const regionCode = ref("");
-const contentTypeCode = ref("");
+const cityCode = ref("")
+const regionCode = ref("")
+const contentTypeCode = ref("")
+
+const cards = ref([])
 
 onMounted(() => {
+
+    setNavPills();
+
     if (window.kakao && window.kakao.maps) {
-        console.log("");
+        // pass
     } else {
         const script = document.createElement("script");
         script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
@@ -48,8 +56,9 @@ let spots = null;
 let cityFunc = async function () {
     await getGugun(cityCode.value, ({ data }) => {
         let gugunList = data.response.body.items.item;
-        regions.value = [];
-        gugunList.forEach((region) => regions.value.push(region));
+        regions.value = []
+        gugunList.forEach((region) => regions.value.push(region))
+        // regions.value.splice(0, regions.value.length, ...gugunList)
     })
     await getMap(cityName.value, cityCode.value, regionCode.value, contentTypeCode.value,
         ({ data }) => {
@@ -100,10 +109,20 @@ let displayMarkers = function (list) {
         )
     }
 
+    cards.value = []
     for (let i = 0; i < list.length; i++) {
         let spot = list[i]
         let lat = spot.mapy
         let lng = spot.mapx
+
+        cards.value.push({
+            id: spot.contentid,
+            addr: spot.addr2,
+            detailAddr: spot.addr1,
+            imageUrl: spot.firstimage,
+            name: spot.title,
+            favorite: true
+        })
 
         let content =
             '<div class="wrap">' +
@@ -202,48 +221,129 @@ let setMap = function (list) {
 
     displayMarkers(list)
 }
+
+function addFavoriteHandler(card) {
+    const response = confirm('즐겨찾기를 추가하시겠습니까?');
+    if (response) {
+        let favoriteToAdd = {};
+        favoriteToAdd.userId = 'ssafy';
+        favoriteToAdd.spotId = card.id
+        addFavorite(favoriteToAdd);
+        alert('즐겨찾기 추가 성공!');
+    } else {
+        alert('즐겨찾기 추가 실패!');
+    }
+    card.favorite = true;
+}
+function deleteFavoriteHandler(card) {
+    const response = confirm('즐겨찾기를 삭제하시겠습니까?');
+    if (response) {
+        let favoriteToDelete = {};
+        favoriteToDelete.userId = 'ssafy';
+        favoriteToDelete.spotId = card.id
+        console.log(favoriteToDelete);
+        deleteFavorite(favoriteToDelete);
+        alert('즐겨찾기 삭제 성공!');
+    } else {
+        alert('즐겨찾기 삭제 실패!');
+    }
+    card.favorite = false
+}
 </script>
 
 <template>
     <h2 class="text-center mb-5">여행지 검색</h2>
-    <div class="d-flex flex-column justify-content-center align-items-center">
-        <div class="input-group mb-3">
-            <div class="d-flex justify-content-center align-items-center container">
-                <div class="d-flex flex-column align-items-center container col-2">
-                    <label for="city">도시</label>
-                    <select class="select-option form-select text-center" id="city" v-model="cityCode" @change="cityFunc">
-                        <option v-for="city in cities" :key="city.code" :value="city.code">
-                            {{ city.name }}
-                        </option>
-                    </select>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="col mt-5">
+                    <div class="card-list-container">
+                        <div v-for="card in cards" :key="card.id" class="card card-profile mt-5">
+                            <div class="row">
+                                <div class="col-6 mt-n5">
+                                    <div class="p-3 pe-md-0">
+                                        <img class="w-100 border-radius-md shadow-lg" :src="card.imageUrl">
+                                    </div>
+                                </div>
+                                <div class="col-lg-8 col-md-6 col-12 my-auto">
+                                    <div class="card-body ps-lg-0 ms-3">
+                                        <h5 class="mb-0">{{ card.name }}</h5>
+                                        <h6 class="text-success">{{ card.addr }}</h6>
+                                        <p class="mb-0" style="max-width:100%;font-weight:400">{{ card.detailAddr }}</p>
+
+                                        <i v-show="card.favorite" @click="deleteFavoriteHandler(card)" class="bi bi-star-fill"
+                                            style="color:#FFEB3B;"></i>
+                                        <i v-show="!card.favorite" @click="addFavoriteHandler(card)" class="bi bi-star"
+                                            style="color:#FFEB3B;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex flex-column align-items-center container  col-2">
-                    <label for="region">지역</label>
-                    <select class="select-option form-select text-center" id="region" v-model="regionCode"
-                        @change="regionFunc">
-                        <option v-for="region in regions" :key="region.code" :value="region.code">
-                            {{ region.name }}
-                        </option>
-                    </select>
+            </div>
+            <div class="col-lg-9 d-flex flex-column justify-content-center align-items-center">
+                <div class="input-group mb-3">
+                    <div class="d-flex justify-content-center align-items-center container">
+                        <div class="d-flex flex-column align-items-center container col-2">
+                            <label for="city">도시</label>
+                            <select class="select-option form-select text-center" id="city" v-model="cityCode"
+                                @change="cityFunc">
+                                <option v-for="city in cities" :key="city.code" :value="city.code">
+                                    {{ city.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="d-flex flex-column align-items-center container  col-2">
+                            <label for="region">지역</label>
+                            <select class="select-option form-select text-center" id="region" v-model="regionCode"
+                                @change="regionFunc">
+                                <option v-for="region in regions" :key="region.code" :value="region.code">
+                                    {{ region.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="d-flex flex-column align-items-center container col-2">
+                            <label for="type">유형</label>
+                            <select class="select-option form-select text-center" id="type" v-model="contentTypeCode"
+                                @change="contentFunc">
+                                <option v-for="contentType in contentTypes" :key="contentType.code"
+                                    :value="contentType.code">
+                                    {{ contentType.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex flex-column align-items-center container  col-2">
-                    <label for="type">유형</label>
-                    <select class="select-option form-select text-center" id="type" v-model="contentTypeCode"
-                        @change="contentFunc">
-                        <option v-for="contentType in contentTypes" :key="contentType.code" :value="contentType.code">
-                            {{ contentType.name }}
-                        </option>
-                    </select>
+                <div class="container">
+                    <div id="map" style="width:100%;height:550px;"></div>
                 </div>
             </div>
         </div>
-        <div class="container">
-            <div id="map" style="width:100%;height:550px;"></div>
-        </div>
+
     </div>
 </template>
 
 <style scoped>
+.card-list-container {
+    min-height: 600px;
+    max-height: 600px;
+    /* Adjust the max-height as needed */
+    overflow-y: auto;
+    padding-right: 15px;
+    /* Add padding to compensate for scrollbar */
+
+    /*  */
+
+    background: none;
+    border: 1px solid #d2d6da;
+    border-radius: 0.375rem;
+    border-top-left-radius: 0.375rem !important;
+    border-bottom-left-radius: 0.375rem !important;
+    padding: 0.625rem 0.75rem !important;
+    line-height: 1.3 !important;
+}
+
 .select-option {
     background: none;
     border: 1px solid #d2d6da;
