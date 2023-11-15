@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <div style="height: 120px"></div>
+    <div style="height: 140px"></div>
     <RouterView />
   </div>
 </template>

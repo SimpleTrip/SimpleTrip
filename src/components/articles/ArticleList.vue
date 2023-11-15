@@ -46,8 +46,8 @@ onMounted(() => {
         <thead>
           <tr>
             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-2">글 번호</th>
+            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-8">제목</th>
             <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-2">작성자</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center col-8">내용</th>
           </tr>
         </thead>
         <tbody>
