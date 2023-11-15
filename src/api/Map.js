@@ -14,18 +14,18 @@ const baseQuery = {
 };
 
 function getSido(success, fail) {
-  const sidoQuery = baseQuery;
+  const sidoQuery = Object.assign({}, baseQuery);
   publicAxios.get(`${areaUrl}`, { params: sidoQuery }).then(success).catch(fail);
 }
 
 function getGugun(areaCode, success, fail) {
-  const gugunQuery = baseQuery;
+  const gugunQuery = Object.assign({}, baseQuery);
   gugunQuery.areaCode = areaCode;
   publicAxios.get(`${areaUrl}`, { params: gugunQuery }).then(success).catch(fail);
 }
 
 function getMap(areaName, areaCode, sigunguCode, contentTypeId, success, fail) {
-  const mapQuery = baseQuery;
+  const mapQuery = Object.assign({}, baseQuery);
   mapQuery.keyword = areaName;
   mapQuery.areaCode = areaCode;
   mapQuery.sigunguCode = sigunguCode;
