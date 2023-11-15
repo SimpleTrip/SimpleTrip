@@ -23,16 +23,13 @@ const routeArticleDetail = function () {
     </td>
     <td>
       <p class="text-xs font-weight-bold mb-0 text-center">
-        {{ props.article.userId }}
+        {{ props.article.articleTitle }}
       </p>
     </td>
     <td>
-      <div class="d-flex px-2 py-1">
-        <div class="d-flex flex-column justify-content-center">
-          <h6 class="mb-0 text-xs">{{ props.article.articleTitle }}</h6>
-          <p class="text-xs text-secondary mb-0">{{ props.article.articleContent }}</p>
-        </div>
-      </div>
+      <p class="text-xs font-weight-bold mb-0 text-center">
+        {{ props.article.userId }}
+      </p>
     </td>
   </tr>
 </template>

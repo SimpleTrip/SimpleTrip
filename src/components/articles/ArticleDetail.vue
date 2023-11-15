@@ -1,4 +1,5 @@
 <script setup>
+import CommentsList from '@/components/comments/CommentsList.vue';
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getArticle, deleteArticle } from '@/api/article.js';
@@ -32,49 +33,50 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2 class="text-center">글 내용</h2>
-  <div class="d-flex justify-content-center gap-2">
-    <div class="d-flex flex-column align-items-center container">
-      <div class="col-6 mb-2 mt-2">
-        <h5>작성자</h5>
-        <div class="input-group input-group-outline form-control form-control-md">
-          <div class="col form-control form-control-md border rounded">
-            {{ article.userId }}
+  <div class="d-flex container justify-content-between align-items-center">
+    <div class="container" style="width: 70%">
+      <div class="d-flex justify-content-between align-items-center container gap-8 mb-2">
+        <h3 class="text-center">글 내용</h3>
+      </div>
+      <div class="justify-content-between container mb-2">
+        <div class="justify-content-center gap-2">
+          <div class="d-flex flex-column">
+            <h5>작성자</h5>
+            <div class="input-group input-group-outline form-control form-control-md">
+              <div class="col form-control form-control-md border rounded">
+                {{ article.userId }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="justify-content-center gap-2">
+          <div class="d-flex flex-column">
+            <h5>제목</h5>
+            <div class="input-group input-group-outline form-control form-control-md">
+              <div class="col form-control form-control-md border rounded">
+                {{ article.articleTitle }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="justify-content-center gap-2">
+          <div class="d-flex flex-column">
+            <h5>내용</h5>
+            <div class="input-group input-group-outline">
+              <label class="form-label"></label>
+              <textarea readonly class="text-area form-control form-control-md col-12" v-model="article.articleContent" rows="14"></textarea>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="d-flex justify-content-center gap-2">
-    <div class="d-flex flex-column align-items-center container">
-      <div class="col-6 mb-2 mt-2">
-        <h5>제목</h5>
-        <div class="input-group input-group-outline">
-          <div class="col form-control form-control-md border rounded">
-            {{ article.articleTitle }}
-          </div>
-        </div>
+      <div class="d-flex justify-content-center align-items-center">
+        <router-link :to="{ name: 'articleList' }" class="btn btn-secondary btn-sm" style="margin: 4px">목록으로 돌아가기</router-link>
+        <router-link :to="{ name: 'articleModify' }" class="btn btn-success btn-sm" style="margin: 4px">수정</router-link>
+        <a @click="deleteHandler" class="btn btn-danger btn-sm" style="margin: 4px">삭제</a>
       </div>
     </div>
-  </div>
-
-  <div class="d-flex justify-content-center gap-2">
-    <div class="d-flex flex-column align-items-center container">
-      <div class="col-6 mb-2 mt-2">
-        <h5>내용</h5>
-        <div class="input-group input-group-outline">
-          <label class="form-label"></label>
-          <textarea readonly class="text-area form-control form-control-md col-12" v-model="article.articleContent" rows="5"></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-center gap-2">
-    <router-link :to="{ name: 'articleList' }" class="btn btn-secondary btn-md">목록으로 돌아가기</router-link>
-    <router-link :to="{ name: 'articleModify' }" class="btn btn-success btn-md">수정</router-link>
-    <a @click="deleteHandler" class="btn btn-danger btn-md">삭제</a>
+    <CommentsList style="width: 30%" :articleId="articleId" />
   </div>
 </template>
 
