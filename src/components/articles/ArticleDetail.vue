@@ -36,7 +36,7 @@ onMounted(() => {
   <div class="d-flex container justify-content-between align-items-center">
     <div class="container" style="width: 70%">
       <div class="d-flex justify-content-between align-items-center container gap-8 mb-2">
-        <h3 class="text-center">글 내용</h3>
+        <h3>{{ article.articleId }}. {{ article.articleTitle }}</h3>
       </div>
       <div class="justify-content-between container mb-2">
         <div class="justify-content-center gap-2">
@@ -45,16 +45,6 @@ onMounted(() => {
             <div class="input-group input-group-outline form-control form-control-md">
               <div class="col form-control form-control-md border rounded">
                 {{ article.userId }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="justify-content-center gap-2">
-          <div class="d-flex flex-column">
-            <h5>제목</h5>
-            <div class="input-group input-group-outline form-control form-control-md">
-              <div class="col form-control form-control-md border rounded">
-                {{ article.articleTitle }}
               </div>
             </div>
           </div>

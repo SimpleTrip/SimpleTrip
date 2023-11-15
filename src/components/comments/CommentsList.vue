@@ -43,12 +43,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center container gap-8 mb-2">
-      <h4 class="text-center">댓글</h4>
-    </div>
-    <div class="container" style="overflow-y: auto; max-height: 470px">
+    <div class="container" style="overflow-y: auto; height: 440px; margin-top: 40px">
       <CommentsItems v-for="comment in commentList" :key="comment.id" :comment="comment" v-if="lengthCommentList != 0" @delete-comment="updateComment" @rewrite-comment="updateComment" />
-      <p style="height: 300px" v-else>댓글이 없습니다.</p>
+      <p style="height: 400px" v-else>댓글이 없습니다.</p>
     </div>
 
     <div class="writeContainer">
