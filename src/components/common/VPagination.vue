@@ -8,7 +8,18 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
+  pgno: {
+    type: Number,
+    default: 1,
+  },
 });
+
+watch(
+  () => props.pgno,
+  (newValue) => {
+    curLabel.value = newValue;
+  }
+);
 
 const curLabel = ref(1);
 const firstLabels = ref(1);
@@ -68,8 +79,6 @@ const clickPage = () => {
         @click="
           () => {
             clickLabel(label);
-            // emit 처리 해서 curLabel 넘겨서 pgno로 쓰고...
-            // 그 pgno를 다시 axios로 보내서 test 해보면 될 듯?
             clickPage();
           }
         "
