@@ -29,17 +29,13 @@ const deleteAns = () => {
     answerAdminId: null,
   };
 
-  answerQnA(params, ({ data }) => {
-    console.log(data);
-  });
+  answerQnA(params, ({ data }) => {});
 
   alert('답변이 삭제 되었습니다.', router.go(0));
 };
 
 const deleteQna = () => {
-  deleteQnA(qnaNo.value, ({ data }) => {
-    console.log(data);
-  });
+  deleteQnA(qnaNo.value, ({ data }) => {});
   alert('QnA가 삭제 되었습니다.', router.replace({ name: 'QnAList' }));
 };
 </script>
@@ -79,7 +75,7 @@ const deleteQna = () => {
         <h5>Answer</h5>
         <div class="input-group input-group-outline form-control form-control-md">
           <div class="col form-control form-control-md border rounded">
-            {{ qna.answer }}
+            {{ qna.answer || '미답변 상태입니다.' }}
           </div>
         </div>
       </div>
@@ -92,7 +88,7 @@ const deleteQna = () => {
         <h5>Admin ID</h5>
         <div class="input-group input-group-outline form-control form-control-md">
           <div class="col form-control form-control-md border rounded">
-            {{ qna.answerAdminId }}
+            {{ qna.answerAdminId || '미답변 상태입니다.' }}
           </div>
         </div>
       </div>

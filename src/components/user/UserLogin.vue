@@ -2,9 +2,9 @@
 import { onMounted } from 'vue';
 
 //Vue Material Kit 2 components
-import MaterialInput from '@/components/marerial/MaterialInput.vue';
-import MaterialSwitch from '@/components/marerial/MaterialSwitch.vue';
-import MaterialButton from '@/components/marerial/MaterialButton.vue';
+import MaterialInput from '@/components/material/MaterialInput.vue';
+import MaterialSwitch from '@/components/material/MaterialSwitch.vue';
+import MaterialButton from '@/components/material/MaterialButton.vue';
 
 // material-input
 import setMaterialInput from '@/assets/js/material-input';

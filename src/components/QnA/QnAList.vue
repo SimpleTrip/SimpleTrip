@@ -2,20 +2,28 @@
 import { ref, onMounted } from 'vue';
 import { list } from '@/api/QnA.js';
 import QnAItem from '@/components/QnA/QnAItem.vue';
+import Pagination from '@/components/common/Pagination.vue';
 
 const qnaList = ref([]);
-const currentPage = ref(2);
-const isCurrentPage = function (page) {
-  return currentPage.value == page;
+const totalPgno = ref(1);
+
+const getList = () => {
+  const params = { pgno: 1 };
+  list(params, ({ data }) => {
+    qnaList.value = data.qnaList;
+    totalPgno.value = data.totalPgno;
+  });
 };
 
 onMounted(() => {
   getList();
 });
 
-const getList = () => {
-  list(({ data }) => {
-    qnaList.value = data;
+const clickPage = (curLabel) => {
+  const params = { pgno: curLabel };
+  list(params, ({ data }) => {
+    qnaList.value = data.qnaList;
+    totalPgno.value = data.totalPgno;
   });
 };
 </script>
@@ -53,19 +61,7 @@ const getList = () => {
         </tbody>
       </table>
       <br />
-      <div class="d-flex justify-content-center">
-        <ul class="pagination pagination-success">
-          <li class="page-item">
-            <a class="page-link" href="javascript:;"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>
-          </li>
-          <li :class="{ 'page-item': true, active: isCurrentPage(page) }" v-for="page in 5" :key="page">
-            <a class="page-link" :class="{ 'current-page-text': isCurrentPage(page) }" href="javascript:;">{{ page }}</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="javascript:;"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
-          </li>
-        </ul>
-      </div>
+      <Pagination @click-page="clickPage" :totalPgno="totalPgno" />
     </div>
   </div>
 </template>
@@ -73,5 +69,10 @@ const getList = () => {
 <style scoped>
 .current-page-text {
   color: white;
+}
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

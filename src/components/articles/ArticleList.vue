@@ -1,26 +1,31 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-
+import Pagination from '@/components/common/Pagination.vue';
 import ArticleItem from '@/components/articles/ArticleItem.vue';
-
 import { getArticleList } from '@/api/article.js';
 
 const articleList = ref([]);
-
-const currentPage = ref(2);
-const isCurrentPage = function (page) {
-  return currentPage.value == page;
-};
+const totalPgno = ref(1);
 
 const setArticleList = function () {
-  getArticleList(({ data }) => {
-    articleList.value = data;
+  const params = { pgno: 1 };
+  getArticleList(params, ({ data }) => {
+    articleList.value = data.articleList;
+    totalPgno.value = data.totalPgno;
   });
 };
 
 onMounted(() => {
   setArticleList();
 });
+
+const clickPage = (curLabel) => {
+  const params = { pgno: curLabel };
+  getArticleList(params, ({ data }) => {
+    articleList.value = data.articleList;
+    totalPgno.value = data.totalPgno;
+  });
+};
 </script>
 
 <template>
@@ -55,19 +60,7 @@ onMounted(() => {
         </tbody>
       </table>
       <br />
-      <div class="d-flex justify-content-center">
-        <ul class="pagination pagination-success">
-          <li class="page-item">
-            <a class="page-link" href="javascript:;"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>
-          </li>
-          <li :class="{ 'page-item': true, active: isCurrentPage(page) }" v-for="page in 5" :key="page">
-            <a class="page-link" :class="{ 'current-page-text': isCurrentPage(page) }" href="javascript:;">{{ page }}</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="javascript:;"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
-          </li>
-        </ul>
-      </div>
+      <Pagination @click-page="clickPage" :totalPgno="totalPgno" />
     </div>
   </div>
 </template>
