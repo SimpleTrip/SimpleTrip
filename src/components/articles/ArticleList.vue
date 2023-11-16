@@ -1,15 +1,23 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import Pagination from '@/components/common/Pagination.vue';
+import Pagination from '@/components/common/VPagination.vue';
 import ArticleItem from '@/components/articles/ArticleItem.vue';
+import Select from '@/components/common/VSelect.vue';
 import { getArticleList } from '@/api/article.js';
 
 const articleList = ref([]);
 const totalPgno = ref(1);
 
+const inputWord = ref('');
+const params = ref({
+  pgno: 1,
+  word: '',
+  key: 'all',
+});
+
 const setArticleList = function () {
-  const params = { pgno: 1 };
-  getArticleList(params, ({ data }) => {
+  params.value.word = inputWord.value;
+  getArticleList(params.value, ({ data }) => {
     articleList.value = data.articleList;
     totalPgno.value = data.totalPgno;
   });
@@ -20,8 +28,23 @@ onMounted(() => {
 });
 
 const clickPage = (curLabel) => {
-  const params = { pgno: curLabel };
-  getArticleList(params, ({ data }) => {
+  params.value.pgno = curLabel;
+  params.value.word = inputWord.value;
+  getArticleList(params.value, ({ data }) => {
+    articleList.value = data.articleList;
+    totalPgno.value = data.totalPgno;
+  });
+};
+
+const selectedChange = (selectedValue) => {
+  params.value.key = selectedValue;
+  params.value.word = inputWord.value;
+};
+
+const clickSearch = () => {
+  params.value.pgno = 1;
+  params.value.word = inputWord.value;
+  getArticleList(params.value, ({ data }) => {
     articleList.value = data.articleList;
     totalPgno.value = data.totalPgno;
   });
@@ -35,14 +58,12 @@ const clickPage = (curLabel) => {
       <div class="ms-2">
         <router-link :to="{ name: 'articleWrite' }" class="btn btn-outline-success btn-md">글 작성</router-link>
       </div>
-      <div class="d-flex">
-        <div class="col-6">
-          <div class="input-group input-group-outline">
-            <label class="form-label"></label>
-            <input type="text" id="text" class="form-control form-control-md" />
-          </div>
+      <div class="d-flex align-items-center justify-content-between" style="width: 50%">
+        <Select style="width: 30%" @selected-change="selectedChange" />
+        <div class="input-group input-group-outline">
+          <input type="text" id="text" class="form-control form-control-md" style="width: 60%" v-model="inputWord" />
+          <i class="searchBtn fas fa-search" style="" @click="clickSearch"></i>
         </div>
-        <button class="btn btn-success btn-md ms-2">글 검색</button>
       </div>
     </div>
 
@@ -60,7 +81,7 @@ const clickPage = (curLabel) => {
         </tbody>
       </table>
       <br />
-      <Pagination @click-page="clickPage" :totalPgno="totalPgno" />
+      <Pagination @click-page="clickPage" :totalPgno="totalPgno" :pgno="params.pgno" />
     </div>
   </div>
 </template>
@@ -68,5 +89,21 @@ const clickPage = (curLabel) => {
 <style scoped>
 .current-page-text {
   color: white;
+}
+.searchBtn {
+  display: flex;
+  font-size: 16px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  width: 10%;
+}
+
+.searchBtn:hover {
+  background-color: #40a027;
 }
 </style>

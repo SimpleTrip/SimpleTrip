@@ -96,11 +96,9 @@ const deleteQna = () => {
   </div>
 
   <div class="d-flex justify-content-center gap-2">
-    <router-link :to="{ name: 'QnAList' }" class="btn btn-secondary btn-md">뒤로가기</router-link>
-
     <!-- 나중에 admin/user 분기로 갈라주기 -->
-    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null">답변 작성</router-link>
-    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null">답변 수정</router-link>
+    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null" replace>답변 작성</router-link>
+    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null" replace>답변 수정</router-link>
     <a @click="deleteAns" class="btn btn-warning btn-md" v-if="qna.answer != null">답변 삭제</a>
 
     <!-- 나중에 본인 글만 삭제할 수 있게 하기 + 관리자는 전부 다 삭제 가능 -->

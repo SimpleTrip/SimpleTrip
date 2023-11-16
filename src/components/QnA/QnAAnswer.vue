@@ -14,7 +14,7 @@ const user = ref({
 
 const onClickAnswer = () => {
   answerQna();
-  alert('답변 작성/수정이 완료 되었습니다.', router.push({ name: 'QnADetail', query: { qnaNo: qnaNo.value } }));
+  alert('답변 작성/수정이 완료 되었습니다.', router.replace({ name: 'QnADetail', query: { qnaNo: qnaNo.value } }));
 };
 
 const answerQna = () => {
@@ -54,7 +54,7 @@ const getqna = () => {
   </div>
 
   <div class="d-flex justify-content-center gap-2">
-    <router-link :to="{ name: 'QnADetail', query: { qnaNo: qnaNo } }" class="btn btn-secondary btn-md">QnA로 돌아가기</router-link>
+    <router-link :to="{ name: 'QnADetail', query: { qnaNo: qnaNo } }" class="btn btn-secondary btn-md" replace>QnA로 돌아가기</router-link>
     <a @click="onClickAnswer" class="btn btn-success btn-md">Answer</a>
   </div>
 </template>
