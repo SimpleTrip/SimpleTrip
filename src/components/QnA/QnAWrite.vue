@@ -19,9 +19,7 @@ const writeQna = () => {
     question: question.value,
     questionUserId: user.value.userId,
   };
-  writeQnA(params, ({ data }) => {
-    console.log(data);
-  });
+  writeQnA(params, ({ data }) => {});
 };
 </script>
 

@@ -4,24 +4,24 @@ const local = localAxios();
 
 const url = '/qna';
 
-function list(success, fail) {
-  local.get(`${url}/qnaList`).then(success).catch(fail);
-}
+const list = (params, success, fail) => {
+  local.get(`${url}/qnaList`, { params: params }).then(success).catch(fail);
+};
 
-function getQnA(qnaNo, success, fail) {
+const getQnA = (qnaNo, success, fail) => {
   local.get(`${url}/question/${qnaNo}`).then(success).catch(fail);
-}
+};
 
-function writeQnA(params, success, fail) {
+const writeQnA = (params, success, fail) => {
   local.post(`${url}/question`, JSON.stringify(params)).then(success).catch(fail);
-}
+};
 
-function answerQnA(params, success, fail) {
+const answerQnA = (params, success, fail) => {
   local.put(`${url}/answer`, JSON.stringify(params)).then(success).catch(fail);
-}
+};
 
-function deleteQnA(qnaNo, success, fail) {
+const deleteQnA = (qnaNo, success, fail) => {
   local.delete(`${url}/question/${qnaNo}`).then(success).catch(fail);
-}
+};
 
 export { list, getQnA, writeQnA, answerQnA, deleteQnA };

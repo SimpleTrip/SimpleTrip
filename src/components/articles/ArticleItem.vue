@@ -7,9 +7,6 @@ const props = defineProps({
 
 const router = useRouter();
 const routeArticleDetail = function () {
-  console.log('test');
-  console.log(props.article);
-  console.log(props.article.articleId);
   router.push({ name: 'articleDetail', params: { articleId: props.article.articleId } });
 };
 </script>

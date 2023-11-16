@@ -24,9 +24,7 @@ const answerQna = () => {
     answerAdminId: user.value.userId,
   };
 
-  answerQnA(params, ({ data }) => {
-    console.log(data);
-  });
+  answerQnA(params, ({ data }) => {});
 };
 
 onMounted(() => {
