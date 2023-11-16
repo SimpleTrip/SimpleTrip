@@ -51,10 +51,10 @@ onMounted(() => {
                 </div>
             </div>
         </section>
-        <div v-show="isSearch">
+        <div v-if="isSearch">
             <SpotSearch></SpotSearch>
         </div>
-        <div v-show="isFavorite">
+        <div v-if="isFavorite">
             <SpotFavorite></SpotFavorite>
         </div>
     </div>
