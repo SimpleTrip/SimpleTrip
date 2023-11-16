@@ -81,6 +81,11 @@ const router = createRouter({
           component: () => import('@/components/spot/SpotScan.vue'),
         },
         {
+          path: 'popular',
+          name: 'spotPopular',
+          component: () => import('@/components/spot/SpotPopular.vue'),
+        },
+        {
           path: 'register',
           name: 'spotRegister',
           component: () => import('@/components/spot/SpotRegister.vue'),

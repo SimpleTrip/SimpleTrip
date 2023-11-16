@@ -29,6 +29,9 @@ import { RouterLink } from 'vue-router';
                 <router-link class="dropdown-item" :to="{ name: 'spotScan' }">여행지 찾기</router-link>
               </li>
               <li>
+                <router-link class="dropdown-item" :to="{ name: 'spotPopular' }">여행지 추천</router-link>
+              </li>
+              <li>
                 <router-link class="dropdown-item" :to="{ name: 'spotRegister' }">여행지 등록</router-link>
               </li>
             </ul>

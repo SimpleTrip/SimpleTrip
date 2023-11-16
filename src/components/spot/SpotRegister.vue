@@ -8,7 +8,7 @@ const registHandler = function() {
 onMounted(() => {
 
     if (window.kakao && window.kakao.maps) {
-        console.log("");
+        // 
     } else {
         const script = document.createElement("script");
         script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY

@@ -8,4 +8,13 @@ function addSpot(spot, sucess, fail) {
     spotAxios.post(`${domain}`, spot).then(sucess).catch(fail);
 }
 
-export { addSpot }
+function getPopularSpotList(user, sucess, fail) {
+    spotAxios.get(`${domain}`, {
+        params: {
+            userSex: user.userSex,
+            userAge: user.userAge
+        }
+    }).then(sucess).catch(fail);
+}
+
+export { addSpot, getPopularSpotList }

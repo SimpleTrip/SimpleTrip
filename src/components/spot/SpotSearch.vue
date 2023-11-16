@@ -41,7 +41,7 @@ watch(() => cards.value, (newCards) => {
 });
 
 // Watcher for favoriteList
-watch(() => favoriteList.value, (newFavoriteList) => {
+watch(() => favoriteList.value, () => {
     updateFavoriteStatus(cards.value);
 });
 
@@ -74,7 +74,6 @@ onMounted(() => {
 
     getSido(({ data }) => {
         let sidoList = data.response.body.items.item;
-        console.log(sidoList)
         sidoList.forEach((city) => cities.value.push(city));
     })
 
@@ -187,9 +186,6 @@ let displayMarkers = function (list) {
             else customOverlay.setVisible(true)
         })
     }
-
-    console.log(favoriteList.value)
-    console.log(cards.value)
 }
 
 let initMap = function () {

@@ -5,7 +5,6 @@ const favoriteAxios = localAxios();
 const domain = '/favorites';
 
 function addFavorite(favorite, sucess, fail) {
-    console.log(favorite)
     favoriteAxios.post(`${domain}`, favorite).then(sucess).catch(fail);
 }
 
@@ -14,7 +13,6 @@ function getFavoriteList(userId, sucess, fail) {
 }
 
 function deleteFavorite(favorite, sucess, fail) {
-    console.log(favorite)
     favoriteAxios.delete(`${domain}`, { 
         data: {
             userId: favorite.userId,
