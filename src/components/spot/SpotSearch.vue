@@ -1,10 +1,16 @@
 <script setup>
-import { ref, computed, onMounted, toRaw } from "vue"
+import { ref, computed, watch, onMounted, toRaw } from "vue"
 import { getSido, getGugun, getMap } from '@/api/Map.js'
-import { addFavorite, deleteFavorite } from '@/api/favorite.js'
+import { addSpot } from '@/api/spot.js'
+import { addFavorite, getFavoriteList, deleteFavorite } from '@/api/favorite.js'
 
 // nav-pill
 import setNavPills from "@/assets/js/nav-pills.js";
+
+const user = ref({
+    userId: 'ssafy'
+})
+const favoriteList = ref([])
 
 const cities = ref([])
 const regions = ref([])
@@ -29,7 +35,30 @@ const contentTypeCode = ref("")
 
 const cards = ref([])
 
+// Watcher for cards
+watch(() => cards.value, (newCards) => {
+    updateFavoriteStatus(newCards);
+});
+
+// Watcher for favoriteList
+watch(() => favoriteList.value, (newFavoriteList) => {
+    updateFavoriteStatus(cards.value);
+});
+
+function updateFavoriteStatus(newCards) {
+    newCards.forEach((card) => {
+        const isFavorite = favoriteList.value.some((favorite) => favorite.spotId == card.id)
+        card.favorite = isFavorite
+    })
+}
+
 onMounted(() => {
+
+    getFavoriteList(user.value.userId, ({ data }) => {
+        for (const favorite of data) {
+            favoriteList.value.push(favorite)
+        }
+    })
 
     setNavPills();
 
@@ -45,6 +74,7 @@ onMounted(() => {
 
     getSido(({ data }) => {
         let sidoList = data.response.body.items.item;
+        console.log(sidoList)
         sidoList.forEach((city) => cities.value.push(city));
     })
 
@@ -55,10 +85,9 @@ let spots = null;
 
 let cityFunc = async function () {
     await getGugun(cityCode.value, ({ data }) => {
-        let gugunList = data.response.body.items.item;
+        let gugunList = data.response.body.items.item
         regions.value = []
         gugunList.forEach((region) => regions.value.push(region))
-        // regions.value.splice(0, regions.value.length, ...gugunList)
     })
     await getMap(cityName.value, cityCode.value, regionCode.value, contentTypeCode.value,
         ({ data }) => {
@@ -121,7 +150,7 @@ let displayMarkers = function (list) {
             detailAddr: spot.addr1,
             imageUrl: spot.firstimage,
             name: spot.title,
-            favorite: true
+            favorite: false
         })
 
         let content =
@@ -158,6 +187,9 @@ let displayMarkers = function (list) {
             else customOverlay.setVisible(true)
         })
     }
+
+    console.log(favoriteList.value)
+    console.log(cards.value)
 }
 
 let initMap = function () {
@@ -225,9 +257,16 @@ let setMap = function (list) {
 function addFavoriteHandler(card) {
     const response = confirm('즐겨찾기를 추가하시겠습니까?');
     if (response) {
+        let spotToAdd = {};
+        spotToAdd.spotId = card.id;
+        spotToAdd.spotName = card.name;
+        spotToAdd.spotAddr = card.detailAddr;
+        spotToAdd.spotImgUrl = card.imageUrl;
+        addSpot(spotToAdd);
+
         let favoriteToAdd = {};
         favoriteToAdd.userId = 'ssafy';
-        favoriteToAdd.spotId = card.id
+        favoriteToAdd.spotId = card.id;
         addFavorite(favoriteToAdd);
         alert('즐겨찾기 추가 성공!');
     } else {
@@ -241,7 +280,6 @@ function deleteFavoriteHandler(card) {
         let favoriteToDelete = {};
         favoriteToDelete.userId = 'ssafy';
         favoriteToDelete.spotId = card.id
-        console.log(favoriteToDelete);
         deleteFavorite(favoriteToDelete);
         alert('즐겨찾기 삭제 성공!');
     } else {
@@ -262,17 +300,17 @@ function deleteFavoriteHandler(card) {
                             <div class="row">
                                 <div class="col-6 mt-n5">
                                     <div class="p-3 pe-md-0">
-                                        <img class="w-100 border-radius-md shadow-lg" :src="card.imageUrl">
+                                        <img v-if="card.imageUrl != ''" class="w-100 border-radius-md shadow-lg" :src="card.imageUrl">
                                     </div>
                                 </div>
-                                <div class="col-lg-8 col-md-6 col-12 my-auto">
+                                <div class="col-12 my-auto">
                                     <div class="card-body ps-lg-0 ms-3">
                                         <h5 class="mb-0">{{ card.name }}</h5>
                                         <h6 class="text-success">{{ card.addr }}</h6>
                                         <p class="mb-0" style="max-width:100%;font-weight:400">{{ card.detailAddr }}</p>
 
-                                        <i v-show="card.favorite" @click="deleteFavoriteHandler(card)" class="bi bi-star-fill"
-                                            style="color:#FFEB3B;"></i>
+                                        <i v-show="card.favorite" @click="deleteFavoriteHandler(card)"
+                                            class="bi bi-star-fill" style="color:#FFEB3B;"></i>
                                         <i v-show="!card.favorite" @click="addFavoriteHandler(card)" class="bi bi-star"
                                             style="color:#FFEB3B;"></i>
                                     </div>

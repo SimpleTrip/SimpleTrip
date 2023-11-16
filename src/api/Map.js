@@ -13,24 +13,24 @@ const baseQuery = {
   serviceKey: VITE_SECRET_KEY,
 };
 
-function getSido(success, fail) {
+async function getSido(success, fail) {
   const sidoQuery = Object.assign({}, baseQuery);
-  publicAxios.get(`${areaUrl}`, { params: sidoQuery }).then(success).catch(fail);
+  await publicAxios.get(`${areaUrl}`, { params: sidoQuery }).then(success).catch(fail);
 }
 
-function getGugun(areaCode, success, fail) {
+async function getGugun(areaCode, success, fail) {
   const gugunQuery = Object.assign({}, baseQuery);
   gugunQuery.areaCode = areaCode;
-  publicAxios.get(`${areaUrl}`, { params: gugunQuery }).then(success).catch(fail);
+  await publicAxios.get(`${areaUrl}`, { params: gugunQuery }).then(success).catch(fail);
 }
 
-function getMap(areaName, areaCode, sigunguCode, contentTypeId, success, fail) {
+async function getMap(areaName, areaCode, sigunguCode, contentTypeId, success, fail) {
   const mapQuery = Object.assign({}, baseQuery);
   mapQuery.keyword = areaName;
   mapQuery.areaCode = areaCode;
   mapQuery.sigunguCode = sigunguCode;
   mapQuery.contentTypeId = contentTypeId;
-  publicAxios.get(`${mapUrl}`, { params: mapQuery }).then(success).catch(fail);
+  await publicAxios.get(`${mapUrl}`, { params: mapQuery }).then(success).catch(fail);
 }
 
 export { getSido, getGugun, getMap };

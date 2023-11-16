@@ -15,7 +15,7 @@ function getFavoriteList(userId, sucess, fail) {
 
 function deleteFavorite(favorite, sucess, fail) {
     console.log(favorite)
-    favoriteAxios.delete(`${domain}`, {
+    favoriteAxios.delete(`${domain}`, { 
         data: {
             userId: favorite.userId,
             spotId: favorite.spotId
