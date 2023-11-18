@@ -58,11 +58,6 @@ const router = createRouter({
           component: () => import('@/components/QnA/QnAWrite.vue'),
         },
         {
-          path: 'modify',
-          name: 'QnAModify',
-          component: () => import('@/components/QnA/QnAModify.vue'),
-        },
-        {
           path: 'admin/answer',
           name: 'QnAAnswer',
           component: () => import('@/components/QnA/QnAAnswer.vue'),
@@ -111,6 +106,29 @@ const router = createRouter({
           path: 'signup',
           name: 'signup',
           component: () => import('@/components/user/UserSignUp.vue'),
+        },
+      ],
+    },
+    {
+      path: '/plan',
+      name: 'plan',
+      redirect: { name: 'planList' },
+      component: () => import('@/views/PlanView.vue'),
+      children: [
+        {
+          path: 'list',
+          name: 'planList',
+          component: () => import('@/components/plan/PlanList.vue'),
+        },
+        {
+          path: 'detail',
+          name: 'planDetail',
+          component: () => import('@/components/plan/PlanDetail.vue'),
+        },
+        {
+          path: 'write',
+          name: 'planWrite',
+          component: () => import('@/components/plan/PlanWrite.vue'),
         },
       ],
     },
