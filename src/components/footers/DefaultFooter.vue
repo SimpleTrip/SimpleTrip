@@ -45,7 +45,7 @@ defineProps({
 });
 </script>
 <template>
-  <footer class="footer py-5">
+  <footer class="footer py-4">
     <div class="container">
       <div class="row">
         <div class="col-lg-8 mb-4 mx-auto text-center">
