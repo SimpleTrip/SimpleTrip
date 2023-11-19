@@ -108,7 +108,7 @@ const clickDelete = () => {
       <div class="col-lg-6">
         <div id="map" style="height: 550px; border-radius: 10px"></div>
       </div>
-      <div class="col-lg-6">
+      <div class="col-lg-4">
         <div class="row text-left">
           <div class="col container">
             <p class="mt-4" style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 6px">{{ plan.planUserId }}님의 여행 계획</p>
@@ -135,8 +135,8 @@ const clickDelete = () => {
               <textarea id="planContent" class="write-form form-control" rows="10" maxlength="500" :value="plan.planContent" readonly></textarea>
             </div>
             <div class="row justify-content-evenly">
-              <button type="button" class="btn btn-outline-success" style="margin: 10px; width: 45%" @click="clickList">여행계획목록</button>
-              <button type="button" class="btn btn-danger" style="margin: 10px; width: 45%" @click="clickDelete">삭제</button>
+              <button type="button" class="btn btn-outline-success" style="margin: 10px; width: 40%" @click="clickList">여행계획목록</button>
+              <button type="button" class="btn btn-danger" style="margin: 10px; width: 40%" @click="clickDelete">삭제</button>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ const clickDelete = () => {
         <div style="text-align: center; width: 100%; margin: 20px; font-weight: bold; margin-top: 40px">
           <span style="font-size: 20px">{{ plan.planUserId }}님의 여행 코스</span>
         </div>
-        <div class="search-list-container col-lg-8">
+        <div class="search-list-container col-lg-10">
           <div style="max-height: 700px; overflow-y: scroll; padding: 4px">
             <PlanItemCard v-for="(place, index) in planItemList" :key="place.id" :place="place" :idx="index" @click="clickCard(index, place.placeName)" />
           </div>

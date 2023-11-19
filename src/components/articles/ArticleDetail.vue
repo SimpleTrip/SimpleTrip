@@ -33,40 +33,44 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="d-flex container justify-content-between align-items-center">
-    <div class="container" style="width: 70%">
-      <div class="d-flex justify-content-between align-items-center container gap-8 mb-2">
-        <h3>{{ article.articleId }}. {{ article.articleTitle }}</h3>
-      </div>
-      <div class="justify-content-between container mb-2">
-        <div class="justify-content-center gap-2">
-          <div class="d-flex flex-column">
-            <h5>작성자</h5>
-            <div class="input-group input-group-outline form-control form-control-md">
-              <div class="col form-control form-control-md border rounded">
-                {{ article.userId }}
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center container gap-8 mb-2">
+          <h3>{{ article.articleId }}. {{ article.articleTitle }}</h3>
+        </div>
+        <div class="justify-content-between container mb-2">
+          <div class="justify-content-center gap-2">
+            <div class="d-flex flex-column">
+              <h5>작성자</h5>
+              <div class="input-group input-group-outline form-control form-control-md">
+                <div class="col form-control form-control-md border rounded">
+                  {{ article.userId }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="justify-content-center gap-2">
+            <div class="d-flex flex-column">
+              <h5>내용</h5>
+              <div class="input-group input-group-outline">
+                <label class="form-label"></label>
+                <textarea readonly class="text-area form-control form-control-md col-12" v-model="article.articleContent" rows="14"></textarea>
               </div>
             </div>
           </div>
         </div>
-        <div class="justify-content-center gap-2">
-          <div class="d-flex flex-column">
-            <h5>내용</h5>
-            <div class="input-group input-group-outline">
-              <label class="form-label"></label>
-              <textarea readonly class="text-area form-control form-control-md col-12" v-model="article.articleContent" rows="14"></textarea>
-            </div>
-          </div>
+
+        <div class="d-flex justify-content-center align-items-center">
+          <router-link :to="{ name: 'articleList' }" class="btn btn-secondary btn-sm" style="margin: 4px">목록으로 돌아가기</router-link>
+          <router-link :to="{ name: 'articleModify' }" class="btn btn-success btn-sm" style="margin: 4px">수정</router-link>
+          <a @click="deleteHandler" class="btn btn-danger btn-sm" style="margin: 4px">삭제</a>
         </div>
       </div>
-
-      <div class="d-flex justify-content-center align-items-center">
-        <router-link :to="{ name: 'articleList' }" class="btn btn-secondary btn-sm" style="margin: 4px">목록으로 돌아가기</router-link>
-        <router-link :to="{ name: 'articleModify' }" class="btn btn-success btn-sm" style="margin: 4px">수정</router-link>
-        <a @click="deleteHandler" class="btn btn-danger btn-sm" style="margin: 4px">삭제</a>
+      <div class="col-lg-3">
+        <CommentsList :articleId="articleId" />
       </div>
     </div>
-    <CommentsList style="width: 30%" :articleId="articleId" />
   </div>
 </template>
 
