@@ -34,8 +34,14 @@ import { RouterLink } from 'vue-router';
               <li>
                 <router-link class="dropdown-item" :to="{ name: 'spotPopular' }">여행지 추천</router-link>
               </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown dropdown-hover mx-2">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">장소</a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
-                <router-link class="dropdown-item" :to="{ name: 'spotRegister' }">여행지 등록</router-link>
+                <router-link class="dropdown-item" :to="{ name: 'placeRegister' }">장소 등록</router-link>
+                <router-link class="dropdown-item" :to="{ name: 'placeList' }">장소 목록</router-link>
               </li>
             </ul>
           </li>
