@@ -65,7 +65,7 @@ const router = createRouter({
       ],
     },
     {
-      path: '/spot',
+      path: '/spots',
       name: 'spot',
       component: () => import('@/views/SpotView.vue'),
       redirect: { name: 'spotScan' },
@@ -80,10 +80,28 @@ const router = createRouter({
           name: 'spotPopular',
           component: () => import('@/components/spot/SpotPopular.vue'),
         },
+      ],
+    },
+    {
+      path: '/places',
+      name: 'place',
+      component: () => import('@/views/PlaceView.vue'),
+      redirect: { name: 'placeRegister' },
+      children: [
         {
           path: 'register',
-          name: 'spotRegister',
-          component: () => import('@/components/spot/SpotRegister.vue'),
+          name: 'placeRegister',
+          component: () => import('@/components/place/PlaceRegister.vue'),
+        },
+        {
+          path: '',
+          name: 'placeList',
+          component: () => import('@/components/place/PlaceList.vue'),
+        },
+        {
+          path: '/places/:placeId',
+          name: 'placeDetail',
+          component: () => import('@/components/place/PlaceDetail.vue'),
         },
       ],
     },

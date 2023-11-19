@@ -90,6 +90,7 @@ const clickSearch = () => {
 .current-page-text {
   color: white;
 }
+
 .searchBtn {
   display: flex;
   font-size: 16px;
@@ -105,5 +106,4 @@ const clickSearch = () => {
 
 .searchBtn:hover {
   background-color: #40a027;
-}
-</style>
+}</style>
