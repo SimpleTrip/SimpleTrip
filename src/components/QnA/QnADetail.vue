@@ -38,6 +38,10 @@ const deleteQna = () => {
   deleteQnA(qnaNo.value, ({ data }) => {});
   alert('QnA가 삭제 되었습니다.', router.replace({ name: 'QnAList' }));
 };
+
+const goBack = () => {
+  router.go(-1);
+};
 </script>
 
 <template>
@@ -97,6 +101,7 @@ const deleteQna = () => {
 
   <div class="d-flex justify-content-center gap-2">
     <!-- 나중에 admin/user 분기로 갈라주기 -->
+    <a @click="goBack" class="btn btn-secondary btn-md">목록으로 돌아가기</a>
     <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null" replace>답변 작성</router-link>
     <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null" replace>답변 수정</router-link>
     <a @click="deleteAns" class="btn btn-warning btn-md" v-if="qna.answer != null">답변 삭제</a>
