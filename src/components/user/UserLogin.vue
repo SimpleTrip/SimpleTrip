@@ -1,16 +1,33 @@
 <script setup>
-import { onMounted } from 'vue';
-
-//Vue Material Kit 2 components
-import MaterialInput from '@/components/material/MaterialInput.vue';
+import { onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 import MaterialSwitch from '@/components/material/MaterialSwitch.vue';
-import MaterialButton from '@/components/material/MaterialButton.vue';
-
-// material-input
 import setMaterialInput from '@/assets/js/material-input';
+import { loginUser } from '@/api/user.js';
+import { useCookies } from 'vue3-cookies';
+import { useUserStore } from '@/stores/user';
+
+const { cookies } = useCookies();
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+
+const userInput = ref({
+  userId: '',
+  userPw: '',
+});
+
+const router = useRouter();
 onMounted(() => {
   setMaterialInput();
 });
+
+const clickLogin = async () => {
+  await loginUser(userInput.value, ({ data }) => {
+    userInfo.value = data;
+    isLogin.value = true;
+  });
+};
 </script>
 <template>
   <div class="container my-auto">
@@ -41,13 +58,21 @@ onMounted(() => {
           </div>
           <div class="card-body">
             <form role="form" class="text-start">
-              <MaterialInput id="id" class="input-group-outline my-3" :label="{ text: 'id', class: 'form-label' }" type="email" />
-              <MaterialInput id="password" class="input-group-outline mb-3" :label="{ text: 'Password', class: 'form-label' }" type="password" />
+              <div class="input-group input-group-outline my-3">
+                <label class="form-label">id</label>
+                <input type="email" class="form-control" v-model="userInput.userId" />
+              </div>
+              <div class="input-group input-group-outline my-3">
+                <label class="form-label">password</label>
+                <input type="current-password" class="form-control" v-model="userInput.userPw" />
+              </div>
+
               <MaterialSwitch class="d-flex align-items-center mb-3" id="rememberMe" labelClass="mb-0 ms-3" checked>Remember me</MaterialSwitch>
 
-              <div class="text-center">
-                <MaterialButton class="my-4 mb-2" variant="gradient" color="success" fullWidth>Sign in</MaterialButton>
+              <div class="text-center" style="padding-top: 20px; padding-bottom: 10px">
+                <a @click="clickLogin" class="btn btn-success btn-md" style="width: 100%; margin: 0px">Sign in</a>
               </div>
+
               <p class="mt-4 text-sm text-center">
                 Don't have an account?
                 <RouterLink :to="{ name: 'signup' }" class="text-success text-gradient font-weight-bold">Sign up</RouterLink>

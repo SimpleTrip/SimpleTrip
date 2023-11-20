@@ -4,6 +4,11 @@ import { list } from '@/api/QnA.js';
 import QnAItem from '@/components/QnA/QnAItem.vue';
 import Pagination from '@/components/common/VPagination.vue';
 import Select from '@/components/common/VSelect.vue';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
+
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
 
 const qnaList = ref([]);
 const totalPgno = ref(1);
@@ -25,6 +30,7 @@ const getList = () => {
 
 onMounted(() => {
   getList();
+  console.log(userInfo.value);
 });
 
 const clickPage = (curLabel) => {
