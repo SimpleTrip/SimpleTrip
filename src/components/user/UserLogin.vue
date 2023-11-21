@@ -27,7 +27,7 @@ const clickLogin = async () => {
   await loginUser(
     userInput.value,
     (success) => {
-      userInfo.value = success;
+      userInfo.value = success.dataBody;
       isLogin.value = true;
       router.replace({ name: 'main' });
     },

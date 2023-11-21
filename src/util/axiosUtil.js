@@ -1,6 +1,8 @@
 const { VITE_LOCAL_URL, VITE_MAP_URL } = import.meta.env;
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
+
 // local vue api axios instance
 function localAxios() {
   const instance = axios.create({
@@ -17,7 +19,7 @@ function localAxios() {
 function publicDataAxios() {
   const instance = axios.create({
     withCredentials: true,
-    baseURL: VITE_MAP_URL,
+    baseURL: '/openApiMap',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
     },

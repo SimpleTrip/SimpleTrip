@@ -1,7 +1,9 @@
+import { useCookies } from 'vue3-cookies';
 import { localAxios } from '../util/axiosUtil';
 
 const local = localAxios();
 const url = '/users';
+const { cookies } = useCookies();
 
 const loginUser = async (params, success, fail) => {
   await local
@@ -11,8 +13,13 @@ const loginUser = async (params, success, fail) => {
 };
 
 const logout = async (success, fail) => {
+  const accessToken = cookies.get('accessToken');
   await local
-    .get(`${url}/logout`)
+    .get(`${url}/logout`, {
+      headers: {
+        Authorization: accessToken && `Bearer ${accessToken}`,
+      },
+    })
     .then((data) => success(data.data))
     .catch((data) => fail(data.response.data));
 };
