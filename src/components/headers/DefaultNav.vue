@@ -14,29 +14,14 @@ const router = useRouter();
 const clickLogout = () => {
   logout(
     (success) => {
-      alert('로그아웃 되었습니다.');
       cookies.remove('refreshToken', '/', 'localhost');
       cookies.remove('accessToken', '/', 'localhost');
+      alert('로그아웃 되었습니다.');
       isLogin.value = false;
       userInfo.value = {};
-      router.replace({ path: '/' })
+      router.replace({ name: 'main' });
     },
-    async (fail) => {
-      const refreshData = await refresh(fail);
-      if (refreshData != null) {
-        if (refreshData.dataHeader.successCode == 0) {
-          userInfo.value = refreshData.dataBody;
-        }
-        fail = refreshData;
-      }
-      if (fail.dataHeader.successCode == 1) {
-        alert('로그아웃 되었습니다.', () => router.replace({ path: '/' }));
-        cookies.remove('refreshToken', '/', 'localhost');
-        cookies.remove('accessToken', '/', 'localhost');
-        isLogin.value = false;
-        userInfo.value = {};
-        return;
-      }
+    (fail) => {
       alert(`로그아웃 실패!\n다시 시도해주세요.`);
     }
   );
@@ -61,18 +46,9 @@ const clickLogout = () => {
       </button>
       <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" id="navCollapse">
         <ul class="navbar-nav navbar-nav-hover ms-auto">
-          <template v-if="isLogin">
-            <li class="nav-item">
-              <a v-if="isLogin" class="nav-link" @click="clickLogout">로그아웃</a>
-            </li>
-            <li class="nav-item">
-
-              <router-link v-if="isLogin" class="nav-link" :to="{ name: 'info' }">회원정보</router-link>
-            </li>
-
-          </template>
-          <li v-else class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'login' }">로그인</router-link>
+          <li class="nav-item">
+            <a v-if="isLogin" class="nav-link" @click="clickLogout" href="javascript:">로그아웃</a>
+            <router-link v-else class="nav-link" :to="{ name: 'login' }">로그인</router-link>
           </li>
           <li>
             <router-link class="nav-link" :to="{ name: 'articles' }">게시판</router-link>
