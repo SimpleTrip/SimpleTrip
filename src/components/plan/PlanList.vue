@@ -1,9 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import { getPlanlist } from '@/api/plan.js';
 import PlanItem from '@/components/plan/PlanItem.vue';
 import Pagination from '@/components/common/VPagination.vue';
 import Select from '@/components/common/VSelect.vue';
+
+const userStore = useUserStore()
+const { isLogin } = storeToRefs(userStore)
 
 const planList = ref([]);
 const totalPgno = ref(1);
@@ -56,7 +61,7 @@ const clickSearch = () => {
     <h2 class="text-center" style="margin-top: 10px; margin-bottom: 10px">여행 계획 리스트</h2>
     <div class="d-flex justify-content-between" style="margin-bottom: 10px">
       <div class="ms-2">
-        <router-link :to="{ name: 'planWrite' }" class="btn btn-outline-success btn-md" style="display: flex; align-items: center; justify-content: center; margin: 0px">Write</router-link>
+        <router-link v-if="isLogin" :to="{ name: 'planWrite' }" class="btn btn-outline-success btn-md" style="display: flex; align-items: center; justify-content: center; margin: 0px">계획 작성하기</router-link>
       </div>
       <div class="d-flex align-items-center justify-content-between" style="width: 50%">
         <Select style="width: 30%" @selected-change="selectedChange" />

@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, toRaw } from "vue"
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import { getSido, getGugun, getMap } from '@/api/Map.js'
 import { addSpot } from '@/api/spot.js'
 import { addFavorite, getFavoriteList, deleteFavorite } from '@/api/favorite.js'
@@ -7,9 +9,9 @@ import { addFavorite, getFavoriteList, deleteFavorite } from '@/api/favorite.js'
 // nav-pill
 import setNavPills from "@/assets/js/nav-pills.js";
 
-const user = ref({
-    userId: 'ssafy'
-})
+const userStore = useUserStore()
+const { isLogin, userInfo } = storeToRefs(userStore)
+
 const favoriteList = ref([])
 
 const cities = ref([])
@@ -52,9 +54,9 @@ function updateFavoriteStatus(newCards) {
     })
 }
 
-onMounted(() => {
+onMounted(async () => {
 
-    getFavoriteList(user.value.userId, ({ data }) => {
+    await getFavoriteList(userInfo.value.userId, ({ data }) => {
         for (const favorite of data) {
             favoriteList.value.push(favorite)
         }
@@ -72,7 +74,7 @@ onMounted(() => {
         document.head.appendChild(script);
     }
 
-    getSido(({ data }) => {
+    await getSido(({ data }) => {
         let sidoList = data.response.body.items.item;
         sidoList.forEach((city) => cities.value.push(city));
     })
@@ -305,9 +307,9 @@ function deleteFavoriteHandler(card) {
                                         <h6 class="text-success">{{ card.addr }}</h6>
                                         <p class="mb-0" style="max-width:100%;font-weight:400">{{ card.detailAddr }}</p>
 
-                                        <i v-show="card.favorite" @click="deleteFavoriteHandler(card)"
+                                        <i v-if="isLogin" v-show="card.favorite" @click="deleteFavoriteHandler(card)"
                                             class="bi bi-star-fill" style="color:#FFEB3B;"></i>
-                                        <i v-show="!card.favorite" @click="addFavoriteHandler(card)" class="bi bi-star"
+                                        <i v-if="isLogin" v-show="!card.favorite" @click="addFavoriteHandler(card)" class="bi bi-star"
                                             style="color:#FFEB3B;"></i>
                                     </div>
                                 </div>
