@@ -20,6 +20,4 @@ app.use(router);
 app.use(materialKit);
 app.use(VueCookies);
 
-// app.use(VueCookies);
-
 app.mount('#app');
