@@ -22,10 +22,16 @@ const params = ref({
 
 const getList = () => {
   params.value.word = inputWord.value;
-  list(params.value, ({ data }) => {
-    qnaList.value = data.qnaList;
-    totalPgno.value = data.totalPgno;
-  });
+  list(
+    params.value,
+    (success) => {
+      qnaList.value = success.dataBody.qnaList;
+      totalPgno.value = success.dataBody.totalPgno;
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
 };
 
 onMounted(() => {
@@ -35,10 +41,16 @@ onMounted(() => {
 const clickPage = (curLabel) => {
   params.value.pgno = curLabel;
   params.value.word = inputWord.value;
-  list(params.value, ({ data }) => {
-    qnaList.value = data.qnaList;
-    totalPgno.value = data.totalPgno;
-  });
+  list(
+    params.value,
+    (success) => {
+      qnaList.value = success.dataBody.qnaList;
+      totalPgno.value = success.dataBody.totalPgno;
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
 };
 
 const selectedChange = (selectedValue) => {
@@ -49,10 +61,16 @@ const selectedChange = (selectedValue) => {
 const clickSearch = () => {
   params.value.pgno = 1;
   params.value.word = inputWord.value;
-  list(params.value, ({ data }) => {
-    qnaList.value = data.qnaList;
-    totalPgno.value = data.totalPgno;
-  });
+  list(
+    params.value,
+    (success) => {
+      qnaList.value = success.dataBody.qnaList;
+      totalPgno.value = success.dataBody.totalPgno;
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
 };
 </script>
 

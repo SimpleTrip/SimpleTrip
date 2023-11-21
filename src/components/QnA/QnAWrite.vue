@@ -2,24 +2,69 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { writeQnA } from '@/api/QnA.js';
+import { useCookies } from 'vue3-cookies';
+import { refresh } from '@/util/tokenUtil';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
+
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+const { cookies } = useCookies();
+
+const noAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
 
 const router = useRouter();
 const question = ref('');
-const user = ref({
-  userId: 'ssafy',
-});
 
 const onClickWrite = () => {
   writeQna();
-  alert('QnA가 작성 되었습니다.', router.push({ name: 'QnAList' }));
 };
 
 const writeQna = () => {
   const params = {
     question: question.value,
-    questionUserId: user.value.userId,
+    questionUserId: userInfo.value.user.userId,
   };
-  writeQnA(params, ({ data }) => {});
+  writeQnA(
+    params,
+    (success) => {
+      alert('QnA가 작성 되었습니다.');
+      router.push({ name: 'QnAList' });
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            await writeQnA(
+              params,
+              (success) => {
+                alert('QnA가 작성 되었습니다.');
+                router.push({ name: 'QnAList' });
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
+    }
+  );
 };
 </script>
 

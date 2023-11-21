@@ -2,24 +2,71 @@
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { answerQnA, getQnA, deleteQnA } from '@/api/QnA.js';
+import { useCookies } from 'vue3-cookies';
+import { refresh } from '@/util/tokenUtil';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
+
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+const { cookies } = useCookies();
+
+const noAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
 
 const qna = ref({});
 const route = useRoute();
 const router = useRouter();
 const qnaNo = ref(route.query.qnaNo);
 
-const user = ref({
-  userId: 'ssafy',
-});
-
 onMounted(() => {
   getqna();
 });
 
 const getqna = () => {
-  getQnA(qnaNo.value, ({ data }) => {
-    qna.value = data;
-  });
+  getQnA(
+    qnaNo.value,
+    (success) => {
+      qna.value = success.dataBody;
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            // access만 만료 됐었어서 refresh로 새롭게 가져옴
+            userInfo.value = refreshData.dataBody;
+            // 새로운 토큰으로 재시도
+            await getQnA(
+              qnaNo.value,
+              (success) => {
+                qna.value = success.dataBody;
+              },
+              (fail) => {
+                // 새로운 토큰으로 했는데 서버에서 에러남
+                // 로그인 관련 문제 아님
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            // 로그인 만료(access/refresh 둘 다)
+            // 쿠키에 아무것도 없음
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
+    }
+  );
 };
 
 const deleteAns = () => {
@@ -29,14 +76,78 @@ const deleteAns = () => {
     answerAdminId: null,
   };
 
-  answerQnA(params, ({ data }) => {});
-
-  alert('답변이 삭제 되었습니다.', router.go(0));
+  answerQnA(
+    params,
+    (success) => {
+      alert('답변이 삭제 되었습니다.');
+      router.go(0);
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            await answerQnA(
+              qnaNo.value,
+              (success) => {
+                alert('답변이 삭제 되었습니다.');
+                router.go(0);
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
+    }
+  );
 };
 
 const deleteQna = () => {
-  deleteQnA(qnaNo.value, ({ data }) => {});
-  alert('QnA가 삭제 되었습니다.', router.replace({ name: 'QnAList' }));
+  deleteQnA(
+    qnaNo.value,
+    qna.value.questionUserId,
+    (success) => {
+      alert('QnA가 삭제 되었습니다.');
+      router.replace({ name: 'QnAList' });
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            await deleteQnA(
+              qnaNo.value,
+              (success) => {
+                alert('QnA가 삭제 되었습니다.');
+                router.replace({ name: 'QnAList' });
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
+    }
+  );
 };
 
 const goBack = () => {
@@ -100,14 +211,12 @@ const goBack = () => {
   </div>
 
   <div class="d-flex justify-content-center gap-2">
-    <!-- 나중에 admin/user 분기로 갈라주기 -->
     <a @click="goBack" class="btn btn-secondary btn-md">목록으로 돌아가기</a>
-    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null" replace>답변 작성</router-link>
-    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null" replace>답변 수정</router-link>
-    <a @click="deleteAns" class="btn btn-warning btn-md" v-if="qna.answer != null">답변 삭제</a>
+    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null && userInfo.user.userRole == 'ROLE_ADMIN'" replace>답변 작성</router-link>
+    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null && userInfo.user.userRole == 'ROLE_ADMIN'" replace>답변 수정</router-link>
+    <a @click="deleteAns" class="btn btn-warning btn-md" v-if="qna.answer != null && userInfo.user.userRole == 'ROLE_ADMIN'">답변 삭제</a>
 
-    <!-- 나중에 본인 글만 삭제할 수 있게 하기 + 관리자는 전부 다 삭제 가능 -->
-    <a @click="deleteQna" class="btn btn-danger btn-md">QnA 삭제</a>
+    <a @click="deleteQna" class="btn btn-danger btn-md" v-if="userInfo.user.userRole == 'ROLE_ADMIN' || userInfo.userId == qna.questionUserId">QnA 삭제</a>
   </div>
 </template>
 
