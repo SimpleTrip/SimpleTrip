@@ -4,6 +4,7 @@ import axios from 'axios';
 // local vue api axios instance
 function localAxios() {
   const instance = axios.create({
+    withCredentials: true,
     baseURL: '/local',
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
@@ -15,6 +16,7 @@ function localAxios() {
 // public data vue api axios instance
 function publicDataAxios() {
   const instance = axios.create({
+    withCredentials: true,
     baseURL: VITE_MAP_URL,
     headers: {
       'Content-Type': 'application/json;charset=utf-8',

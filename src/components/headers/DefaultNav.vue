@@ -1,5 +1,28 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { RouterLink, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { logout } from '@/api/user';
+import { useCookies } from 'vue3-cookies';
+
+const cookies = useCookies();
+const userStore = useUserStore();
+const { isLogin } = storeToRefs(userStore);
+const router = useRouter();
+
+const clickLogout = () => {
+  logout(
+    (success) => {
+      cookies.remove('refreshToken', '/', 'localhost');
+      cookies.remove('accessToken', '/', 'localhost');
+      cookies.alert('로그아웃 되었습니다.', router.replace({ name: 'main' }));
+    },
+    (fail) => {
+      isLogin.value = false;
+      alert('로그아웃 실패!', fail.dataHeader.resultMessage);
+    }
+  );
+};
 </script>
 
 <template>
@@ -17,7 +40,8 @@ import { RouterLink } from 'vue-router';
       <div class="collapse navbar-collapse w-100 pt-3 pb-2 py-lg-0" id="navCollapse">
         <ul class="navbar-nav navbar-nav-hover ms-auto">
           <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'login' }">로그인</router-link>
+            <a v-if="isLogin" class="nav-link" @click="clickLogout">로그아웃</a>
+            <router-link v-else class="nav-link" :to="{ name: 'login' }">로그인</router-link>
           </li>
           <li>
             <router-link class="nav-link" :to="{ name: 'articles' }">게시판</router-link>

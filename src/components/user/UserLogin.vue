@@ -18,15 +18,23 @@ const userInput = ref({
 });
 
 const router = useRouter();
+
 onMounted(() => {
   setMaterialInput();
 });
 
 const clickLogin = async () => {
-  await loginUser(userInput.value, ({ data }) => {
-    userInfo.value = data;
-    isLogin.value = true;
-  });
+  await loginUser(
+    userInput.value,
+    (success) => {
+      userInfo.value = success;
+      isLogin.value = true;
+      router.replace({ name: 'main' });
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
 };
 </script>
 <template>
@@ -64,7 +72,7 @@ const clickLogin = async () => {
               </div>
               <div class="input-group input-group-outline my-3">
                 <label class="form-label">password</label>
-                <input type="current-password" class="form-control" v-model="userInput.userPw" />
+                <input type="password" class="form-control" v-model="userInput.userPw" />
               </div>
 
               <MaterialSwitch class="d-flex align-items-center mb-3" id="rememberMe" labelClass="mb-0 ms-3" checked>Remember me</MaterialSwitch>

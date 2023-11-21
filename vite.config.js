@@ -16,11 +16,12 @@ export default defineConfig({
       '/local': {
         target: 'http://localhost',
         changeOrigin: true,
+        withCredentials: true,
         rewrite: (path) => path.replace(/^\/local/, ''),
       },
     },
   },
   define: {
-    'global': {},
+    global: {},
   },
 });

@@ -30,7 +30,6 @@ const getList = () => {
 
 onMounted(() => {
   getList();
-  console.log(userInfo.value);
 });
 
 const clickPage = (curLabel) => {
