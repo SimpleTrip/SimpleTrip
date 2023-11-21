@@ -105,11 +105,11 @@ const router = createRouter({
       name: 'user',
       component: () => import('@/views/UserView.vue'),
       children: [
-        // {
-        //   path: 'info',
-        //   name: 'info',
-        //   component: () => import('@/components/user/UserInfo.vue'),
-        // },
+        {
+          path: 'info',
+          name: 'info',
+          component: () => import('@/components/user/UserInfo.vue'),
+        },
         {
           path: 'login',
           name: 'login',

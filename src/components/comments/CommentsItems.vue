@@ -47,8 +47,7 @@ onMounted(() => {
   // console.log(props.comment.commentUserId)
   watch([userInfo.value, props.comment], () => {
     checkOwner(props.comment, isLogin, userInfo)
-  },
-    { immediate: true })
+  }, { immediate: true })
   console.log('!')
 });
 </script>

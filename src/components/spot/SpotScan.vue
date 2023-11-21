@@ -32,19 +32,18 @@ onMounted(() => {
                         <div class="nav-wrapper position-relative end-0">
                             <ul class="nav nav-pills nav-fill p-1" role="tablist">
                                 <li class="nav-item">
-                                    <a @click="switchSearch"
-                                    class="nav-link mb-0 px-0 py-1 fw-bold" :class="{active: isSearch}"
-                                        data-bs-toggle="tab" href="#profile-tabs-simple" role="tab" aria-controls="profile"
-                                        :aria-selected="isSearch">여행지 검색</a>
+                                    <a @click="switchSearch" class="nav-link mb-0 px-0 py-1 fw-bold"
+                                        :class="{ active: isSearch }" data-bs-toggle="tab" href="#profile-tabs-simple"
+                                        role="tab" aria-controls="profile" :aria-selected="isSearch">여행지 검색</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a @click="switchFavorite"
-                                    class="nav-link mb-0 px-0 py-1 fw-bold" :class="{active: isFavorite}" data-bs-toggle="tab"
-                                        href="#dashboard-tabs-simple" role="tab" aria-controls="dashboard"
-                                        :aria-selected="isFavorite">
+                                    <a @click="switchFavorite" class="nav-link mb-0 px-0 py-1 fw-bold"
+                                        :class="{ active: isFavorite }" data-bs-toggle="tab" href="#dashboard-tabs-simple"
+                                        role="tab" aria-controls="dashboard" :aria-selected="isFavorite">
                                         즐겨찾기
                                     </a>
                                 </li>
+                                
                             </ul>
                         </div>
                     </div>
