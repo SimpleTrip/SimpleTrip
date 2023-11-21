@@ -44,7 +44,8 @@ onMounted(() => {
 
   watch([userInfo, article], () => {
     checkOwner(article, isLogin, userInfo)
-  })
+  },
+    { immediate: true })
 });
 </script>
 

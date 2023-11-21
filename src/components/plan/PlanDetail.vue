@@ -1,10 +1,20 @@
 <script setup>
-import { onMounted, ref, toRaw } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import { useRouter, useRoute } from 'vue-router';
 import PlanItemCard from '@/components/plan/item/PlanItemCard.vue';
-import PlaceDetail from '@/components/plan/item/PlaceDetail.vue';
-import MaterialInput from '@/components/material/MaterialInput.vue';
 import { getPlan, deletePlanAndItem } from '@/api/plan.js';
+
+const userStore = useUserStore()
+const { isLogin, userInfo } = storeToRefs(userStore)
+
+const canClick = ref(false)
+
+const checkOwner = function (plan, isLogin, userInfo) {
+  if (userInfo.value) canClick.value = (isLogin.value && (plan.value.planUserId === userInfo.value.userId))
+  else canClick.value = false
+}
 
 const router = useRouter();
 const route = useRoute();
@@ -13,17 +23,30 @@ const planNo = ref(route.query.planNo);
 const planItemList = ref([]);
 const plan = ref({});
 
-const isShowDetail = ref(false);
-const selectIndex = ref(-1);
-
 let map;
 let infowindow;
 
 onMounted(async () => {
+
+  if (window.kakao && window.kakao.maps) {
+        // pass
+    } else {
+        const script = document.createElement("script");
+        script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+            }&libraries=services,clusterer`;
+        /* global kakao */
+        document.head.appendChild(script);
+    }
+
   await getPlan(planNo.value, ({ data }) => {
     plan.value = data.plan;
     planItemList.value = data.planItem;
   });
+
+  watch([userInfo, plan], () => {
+    checkOwner(plan, isLogin, userInfo)
+  },
+    { immediate: true })
 
   let mapContainer = document.getElementById('map'), // 지도를 표시할 div
     mapOption = {
@@ -68,7 +91,7 @@ const displayMarkers = (places) => {
 };
 
 // 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
-const addMarker = (position, idx, title) => {
+const addMarker = (position) => {
   var marker = new kakao.maps.Marker({
     position: position, // 마커의 위치
   });
@@ -97,7 +120,7 @@ const clickCard = (index, placeName) => {
 };
 
 const clickDelete = () => {
-  deletePlanAndItem(planNo.value, ({ date }) => {});
+  deletePlanAndItem(planNo.value, () => {});
   alert('계획이 삭제되었습니다.', router.replace({ name: 'planList' }));
 };
 </script>
@@ -136,7 +159,7 @@ const clickDelete = () => {
             </div>
             <div class="row justify-content-evenly">
               <button type="button" class="btn btn-outline-success" style="margin: 10px; width: 40%" @click="clickList">여행계획목록</button>
-              <button type="button" class="btn btn-danger" style="margin: 10px; width: 40%" @click="clickDelete">삭제</button>
+              <button v-if="canClick" type="button" class="btn btn-danger" style="margin: 10px; width: 40%" @click="clickDelete">삭제</button>
             </div>
           </div>
         </div>

@@ -63,11 +63,14 @@ const clickLogout = () => {
           <li>
             <router-link class="nav-link" :to="{ name: 'articles' }">게시판</router-link>
           </li>
-          <li>
-            <router-link class="nav-link" :to="{ name: 'plan' }">여행 플래너</router-link>
-          </li>
           <li class="nav-item dropdown dropdown-hover mx-2">
-            <router-link class="nav-link" :to="{ name: 'spotScan' }">여행지 찾기</router-link>
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">여행</a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li>
+                <router-link class="dropdown-item" :to="{ name: 'spotScan' }">여행지 찾기</router-link>
+                <router-link class="dropdown-item" :to="{ name: 'plan' }">여행 계획</router-link>
+              </li>
+            </ul>
           </li>
           <li class="nav-item dropdown dropdown-hover mx-2">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">장소</a>
@@ -78,13 +81,8 @@ const clickLogout = () => {
               </li>
             </ul>
           </li>
-          <li class="nav-item dropdown dropdown-hover mx-2">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false"> HELP DESK </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
-                <router-link class="dropdown-item" :to="{ name: 'QnA' }">QnA</router-link>
-              </li>
-            </ul>
+          <li class="nav-item">
+            <router-link class="nav-link" :to="{ name: 'QnA' }">QnA</router-link>
           </li>
         </ul>
       </div>
