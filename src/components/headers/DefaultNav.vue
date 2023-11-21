@@ -4,22 +4,39 @@ import { RouterLink, useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { logout } from '@/api/user';
 import { useCookies } from 'vue3-cookies';
+import { refresh } from '@/util/tokenUtil';
 
-const cookies = useCookies();
+const { cookies } = useCookies();
 const userStore = useUserStore();
-const { isLogin } = storeToRefs(userStore);
+const { isLogin, userInfo } = storeToRefs(userStore);
 const router = useRouter();
 
 const clickLogout = () => {
   logout(
     (success) => {
+      alert('로그아웃 되었습니다.', () => router.replace({ name: 'main' }));
       cookies.remove('refreshToken', '/', 'localhost');
       cookies.remove('accessToken', '/', 'localhost');
-      cookies.alert('로그아웃 되었습니다.', router.replace({ name: 'main' }));
-    },
-    (fail) => {
       isLogin.value = false;
-      alert('로그아웃 실패!', fail.dataHeader.resultMessage);
+      userInfo.value = {};
+    },
+    async (fail) => {
+      const refreshData = await refresh(fail);
+      if (refreshData != null) {
+        if (refreshData.dataHeader.successCode == 0) {
+          userInfo.value = refreshData.dataBody;
+        }
+        fail = refreshData;
+      }
+      if (fail.dataHeader.successCode == 1) {
+        alert('로그아웃 되었습니다.', () => router.replace({ name: 'main' }));
+        cookies.remove('refreshToken', '/', 'localhost');
+        cookies.remove('accessToken', '/', 'localhost');
+        isLogin.value = false;
+        userInfo.value = {};
+        return;
+      }
+      alert(`로그아웃 실패!\n다시 시도해주세요.`);
     }
   );
 };

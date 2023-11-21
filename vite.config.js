@@ -16,8 +16,16 @@ export default defineConfig({
       '/local': {
         target: 'http://localhost',
         changeOrigin: true,
-        withCredentials: true,
+        secure: false,
+        ws: true,
         rewrite: (path) => path.replace(/^\/local/, ''),
+      },
+      '/openApiMap': {
+        target: 'https://apis.data.go.kr/B551011/KorService1',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/openApiMap/, ''),
       },
     },
   },
