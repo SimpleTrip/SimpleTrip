@@ -1,7 +1,12 @@
 <script setup>
 import CommentsItems from '@/components/comments/CommentsItems.vue';
 import { ref, onMounted, computed } from 'vue';
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import { getCommentList, writeComment } from '@/api/comment.js';
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const commentList = ref([]);
 const inputCommentContent = ref('');
@@ -21,9 +26,12 @@ const lengthCommentList = computed(() => {
 });
 
 const clickWrite = async () => {
+
+  console.log(userInfo.value.userId)
+
   const comment = {
     commentContent: inputCommentContent.value,
-    commentUserId: 'ssafy',
+    commentUserId: userInfo.value.userId,
     articleId: props.articleId,
   };
 
