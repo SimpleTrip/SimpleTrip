@@ -1,11 +1,16 @@
 <script setup>
 import CommentsList from '@/components/comments/CommentsList.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import { getArticle, deleteArticle } from '@/api/article.js';
 
 const route = useRoute();
 const router = useRouter();
+
+const userStore = useUserStore()
+const { isLogin, userInfo } = storeToRefs(userStore)
 
 const article = ref({});
 const articleId = ref(route.params.articleId);
@@ -27,8 +32,19 @@ const deleteHandler = function () {
   }
 };
 
+const canClick = ref(false)
+
+const checkOwner = function (article, isLogin, userInfo) {
+  if (userInfo.value) canClick.value = (isLogin.value && (article.value.userId === userInfo.value.userId))
+  else canClick.value = false
+}
+
 onMounted(() => {
   setArticle();
+
+  watch([userInfo, article], () => {
+    checkOwner(article, isLogin, userInfo)
+  })
 });
 </script>
 
@@ -57,14 +73,14 @@ onMounted(() => {
                 <label class="form-label"></label>
                 <textarea readonly class="text-area form-control form-control-md col-12" v-model="article.articleContent" rows="14"></textarea>
               </div>
-            </div>
+            </div>  
           </div>
         </div>
 
         <div class="d-flex justify-content-center align-items-center">
           <router-link :to="{ name: 'articleList' }" class="btn btn-secondary btn-sm" style="margin: 4px">목록으로 돌아가기</router-link>
-          <router-link :to="{ name: 'articleModify' }" class="btn btn-success btn-sm" style="margin: 4px">수정</router-link>
-          <a @click="deleteHandler" class="btn btn-danger btn-sm" style="margin: 4px">삭제</a>
+          <router-link v-if="canClick" :to="{ name: 'articleModify' }" class="btn btn-success btn-sm" style="margin: 4px">수정</router-link>
+          <a v-if="canClick" @click="deleteHandler" class="btn btn-danger btn-sm" style="margin: 4px">삭제</a>
         </div>
       </div>
       <div class="col-lg-3">

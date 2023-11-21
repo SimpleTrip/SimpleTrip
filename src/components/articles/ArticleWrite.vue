@@ -1,7 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
 import { writeArticle } from '@/api/article.js';
+
+
+const userStore = useUserStore()
+const { userInfo } = storeToRefs(userStore)
 
 const router = useRouter();
 
@@ -25,8 +31,12 @@ const writeHandler = function () {
 const resetArticle = function () {
   article.value.articleTitle = '';
   article.value.articleContent = '';
-  article.value.userId = '';
 };
+
+onMounted(() => {
+  article.value.userId = userInfo.value.userId
+});
+
 </script>
 
 <template>
@@ -37,7 +47,7 @@ const resetArticle = function () {
         <h5>작성자</h5>
         <div class="input-group input-group-outline">
           <label class="form-label"></label>
-          <input v-model="article.userId" type="text" id="text" class="form-control form-control-md" />
+          <input readonly v-model="article.userId" type="text" id="text" class="form-control form-control-md" />
         </div>
       </div>
     </div>

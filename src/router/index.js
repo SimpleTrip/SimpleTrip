@@ -74,12 +74,7 @@ const router = createRouter({
           path: 'scan',
           name: 'spotScan',
           component: () => import('@/components/spot/SpotScan.vue'),
-        },
-        {
-          path: 'popular',
-          name: 'spotPopular',
-          component: () => import('@/components/spot/SpotPopular.vue'),
-        },
+        }
       ],
     },
     {

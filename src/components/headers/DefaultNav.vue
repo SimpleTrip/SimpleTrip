@@ -67,15 +67,7 @@ const clickLogout = () => {
             <router-link class="nav-link" :to="{ name: 'plan' }">여행 플래너</router-link>
           </li>
           <li class="nav-item dropdown dropdown-hover mx-2">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">여행지</a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li>
-                <router-link class="dropdown-item" :to="{ name: 'spotScan' }">여행지 찾기</router-link>
-              </li>
-              <li>
-                <router-link class="dropdown-item" :to="{ name: 'spotPopular' }">여행지 추천</router-link>
-              </li>
-            </ul>
+            <router-link class="nav-link" :to="{ name: 'spotScan' }">여행지 찾기</router-link>
           </li>
           <li class="nav-item dropdown dropdown-hover mx-2">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">장소</a>
