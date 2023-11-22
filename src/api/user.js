@@ -12,6 +12,68 @@ const loginUser = async (params, success, fail) => {
     .catch((data) => fail(data.response.data));
 };
 
+const joinUser = async (params, success, fail) => {
+  await local
+    .post(`${url}`, JSON.stringify(params))
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
+const viewUser = async (userId, success, fail) => {
+  const accessToken = cookies.get('accessToken');
+  await local
+    .get(`${url}/${userId}`, {
+      headers: {
+        Authorization: accessToken && `Bearer ${accessToken}`,
+      },
+    })
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
+const withdrawUser = async (userId, success, fail) => {
+  const accessToken = cookies.get('accessToken');
+  await local
+    .put(`${url}/delete`, JSON.stringify({ userId: userId }), {
+      headers: {
+        Authorization: accessToken && `Bearer ${accessToken}`,
+      },
+    })
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
+const updateUserInfo = async (params, success, fail) => {
+  const accessToken = cookies.get('accessToken');
+  await local
+    .put(`${url}/modifyInfo`, JSON.stringify(params), {
+      headers: {
+        Authorization: accessToken && `Bearer ${accessToken}`,
+      },
+    })
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
+const changePass = async (params, success, fail) => {
+  const accessToken = cookies.get('accessToken');
+  await local
+    .put(`${url}/changePass`, JSON.stringify(params), {
+      headers: {
+        Authorization: accessToken && `Bearer ${accessToken}`,
+      },
+    })
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
+const getMyPass = async (params, success, fail) => {
+  await local
+    .post(`${url}/findpass`, JSON.stringify(params))
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
 const logout = async (success, fail) => {
   const accessToken = cookies.get('accessToken');
   await local
@@ -24,4 +86,4 @@ const logout = async (success, fail) => {
     .catch((data) => fail(data.response.data));
 };
 
-export { loginUser, logout };
+export { loginUser, logout, joinUser, viewUser, withdrawUser, updateUserInfo, changePass, getMyPass };
