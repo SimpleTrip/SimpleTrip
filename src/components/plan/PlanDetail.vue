@@ -1,20 +1,16 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user'
 import { useRouter, useRoute } from 'vue-router';
 import PlanItemCard from '@/components/plan/item/PlanItemCard.vue';
 import { getPlan, deletePlanAndItem } from '@/api/plan.js';
+import { useCookies } from 'vue3-cookies';
+import { refresh } from '@/util/tokenUtil';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
 
-const userStore = useUserStore()
-const { isLogin, userInfo } = storeToRefs(userStore)
-
-const canClick = ref(false)
-
-const checkOwner = function (plan, isLogin, userInfo) {
-  if (userInfo.value) canClick.value = (isLogin.value && (plan.value.planUserId === userInfo.value.userId))
-  else canClick.value = false
-}
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+const { cookies } = useCookies();
 
 const router = useRouter();
 const route = useRoute();
@@ -27,39 +23,66 @@ let map;
 let infowindow;
 
 onMounted(async () => {
-
   if (window.kakao && window.kakao.maps) {
-        // pass
-    } else {
-        const script = document.createElement("script");
-        script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-            }&libraries=services,clusterer`;
-        /* global kakao */
-        document.head.appendChild(script);
+    // pass
+  } else {
+    const script = document.createElement('script');
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY}&libraries=services,clusterer`;
+    /* global kakao */
+    document.head.appendChild(script);
+  }
+
+  await getPlan(
+    planNo.value,
+    (success) => {
+      plan.value = success.dataBody.plan;
+      planItemList.value = success.dataBody.planItem;
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            getPlan(
+              planNo.value,
+              (success) => {
+                plan.value = success.dataBody.plan;
+                planItemList.value = success.dataBody.planItem;
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
     }
+  );
+});
 
-  await getPlan(planNo.value, ({ data }) => {
-    plan.value = data.plan;
-    planItemList.value = data.planItem;
-  });
-
-  watch([userInfo, plan], () => {
-    checkOwner(plan, isLogin, userInfo)
-  },
-    { immediate: true })
-
-  let mapContainer = document.getElementById('map'), // 지도를 표시할 div
-    mapOption = {
-      center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-      level: 3, // 지도의 확대 레벨
-    };
-  map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-  let mapTypeControl = new kakao.maps.MapTypeControl();
-  map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-  let zoomControl = new kakao.maps.ZoomControl();
-  map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-  infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
-  displayMarkers(planItemList.value);
+watch(planItemList, (newValue) => {
+  if (newValue != null) {
+    let mapContainer = document.getElementById('map'), // 지도를 표시할 div
+      mapOption = {
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 3, // 지도의 확대 레벨
+      };
+    map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+    let mapTypeControl = new kakao.maps.MapTypeControl();
+    map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+    let zoomControl = new kakao.maps.ZoomControl();
+    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+    infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+    displayMarkers(planItemList.value);
+  }
 });
 
 // 마커 보기
@@ -120,8 +143,42 @@ const clickCard = (index, placeName) => {
 };
 
 const clickDelete = () => {
-  deletePlanAndItem(planNo.value, () => {});
-  alert('계획이 삭제되었습니다.', router.replace({ name: 'planList' }));
+  deletePlanAndItem(
+    planNo.value,
+    plan.value.planUserId,
+    (success) => {
+      alert('계획이 삭제되었습니다.');
+      router.replace({ name: 'planList' });
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            await deletePlanAndItem(
+              planNo.value,
+              plan.value.planUserId,
+              (success) => {
+                alert('계획이 삭제되었습니다.');
+                router.replace({ name: 'planList' });
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
+    }
+  );
 };
 </script>
 
@@ -159,7 +216,7 @@ const clickDelete = () => {
             </div>
             <div class="row justify-content-evenly">
               <button type="button" class="btn btn-outline-success" style="margin: 10px; width: 40%" @click="clickList">여행계획목록</button>
-              <button v-if="canClick" type="button" class="btn btn-danger" style="margin: 10px; width: 40%" @click="clickDelete">삭제</button>
+              <button v-if="userInfo.userRole == 'ROLE_ADMIN' || userInfo.userId == plan.planUserId" type="button" class="btn btn-danger" style="margin: 10px; width: 40%" @click="clickDelete">삭제</button>
             </div>
           </div>
         </div>
