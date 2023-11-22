@@ -6,6 +6,22 @@ import PlacePlusCard from '@/components/plan/item/PlacePlusCard.vue';
 import PlaceDetail from '@/components/plan/item/PlaceDetail.vue';
 import MaterialInput from '@/components/material/MaterialInput.vue';
 import { setPlan } from '@/api/plan.js';
+import { useCookies } from 'vue3-cookies';
+import { refresh } from '@/util/tokenUtil';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
+
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+const { cookies } = useCookies();
+
+const noAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
 
 const inputWord = ref('');
 const searchList = ref([]);
@@ -21,7 +37,7 @@ const plan = ref({
   planContent: '',
   startDate: '',
   endDate: '',
-  planUserId: 'ssafy',
+  planUserId: userInfo.value.userId,
 });
 
 const router = useRouter();
@@ -181,8 +197,40 @@ const clickRegist = () => {
     alert('날짜를 정확히 기입해주세요');
     return;
   }
-  setPlan({ planItem: plusList.value, plan: plan.value }, ({ data }) => {});
-  alert('계획이 등록되었습니다.', router.replace({ name: 'planList' }));
+  setPlan(
+    { planItem: plusList.value, plan: plan.value },
+    (success) => {
+      alert('계획이 등록되었습니다.');
+      router.replace({ name: 'planList' });
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            await setPlan(
+              { planItem: plusList.value, plan: plan.value },
+              (success) => {
+                alert('계획이 등록되었습니다.');
+                router.replace({ name: 'planList' });
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(0);
+              }
+            );
+          } else {
+            noAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(0);
+      }
+    }
+  );
 };
 
 const clickList = () => {

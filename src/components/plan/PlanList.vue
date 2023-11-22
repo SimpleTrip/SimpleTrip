@@ -1,14 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { storeToRefs } from 'pinia'
-import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia';
+import { useUserStore } from '@/stores/user';
 import { getPlanlist } from '@/api/plan.js';
 import PlanItem from '@/components/plan/PlanItem.vue';
 import Pagination from '@/components/common/VPagination.vue';
 import Select from '@/components/common/VSelect.vue';
 
-const userStore = useUserStore()
-const { isLogin } = storeToRefs(userStore)
+const userStore = useUserStore();
+const { isLogin } = storeToRefs(userStore);
 
 const planList = ref([]);
 const totalPgno = ref(1);
@@ -20,39 +20,57 @@ const params = ref({
   key: 'all',
 });
 
-const getList = () => {
-  params.value.word = inputWord.value;
-  getPlanlist(params.value, ({ data }) => {
-    planList.value = data.planList;
-    totalPgno.value = data.totalPgno;
-  });
-};
-
 onMounted(() => {
   getList();
 });
-
-const clickPage = (curLabel) => {
-  params.value.pgno = curLabel;
-  params.value.word = inputWord.value;
-  getPlanlist(params.value, ({ data }) => {
-    planList.value = data.planList;
-    totalPgno.value = data.totalPgno;
-  });
-};
 
 const selectedChange = (selectedValue) => {
   params.value.key = selectedValue;
   params.value.word = inputWord.value;
 };
 
+const getList = () => {
+  params.value.word = inputWord.value;
+  getPlanlist(
+    params.value,
+    (success) => {
+      planList.value = success.dataBody.planList;
+      totalPgno.value = success.dataBody.totalPgno;
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
+};
+
+const clickPage = (curLabel) => {
+  params.value.pgno = curLabel;
+  params.value.word = inputWord.value;
+  getPlanlist(
+    params.value,
+    (success) => {
+      planList.value = success.dataBody.planList;
+      totalPgno.value = success.dataBody.totalPgno;
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
+};
+
 const clickSearch = () => {
   params.value.pgno = 1;
   params.value.word = inputWord.value;
-  getPlanlist(params.value, ({ data }) => {
-    planList.value = data.planList;
-    totalPgno.value = data.totalPgno;
-  });
+  getPlanlist(
+    params.value,
+    (success) => {
+      planList.value = success.dataBody.planList;
+      totalPgno.value = success.dataBody.totalPgno;
+    },
+    (fail) => {
+      alert(fail.dataHeader.resultMessage);
+    }
+  );
 };
 </script>
 
