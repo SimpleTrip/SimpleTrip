@@ -33,7 +33,7 @@ const answerQna = () => {
   const params = {
     qnaNo: qnaNo.value,
     answer: qna.value.answer,
-    answerAdminId: userInfo.value.user.userId,
+    answerAdminId: userInfo.value.userId,
   };
 
   answerQnA(
