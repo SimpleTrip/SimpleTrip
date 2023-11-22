@@ -36,7 +36,7 @@ const clickLogin = async () => {
 };
 </script>
 <template>
-  <div class="container my-auto">
+  <div class="my-auto w-100">
     <div class="row my-5">
       <div class="col-lg-4 col-md-8 col-12 mx-auto">
         <div class="card z-index-0 fadeIn3 fadeInBottom">
@@ -77,12 +77,15 @@ const clickLogin = async () => {
               <div class="text-center" style="padding-top: 20px; padding-bottom: 10px">
                 <a @click="clickLogin" class="btn btn-success btn-md" style="width: 100%; margin: 0px">로그인</a>
               </div>
-
-              <p class="mt-4 text-sm text-center">
-                계정이 없으신가요?
-                <RouterLink :to="{ name: 'signup' }" class="text-success text-gradient font-weight-bold">가입하기</RouterLink>
-              </p>
             </form>
+            <div class="d-flex justify-content-around">
+              <span class="mt-4 text-sm text-center">
+                <RouterLink :to="{ name: 'signup' }" class="text-secondary"> 가입하기</RouterLink>
+              </span>
+              <span class="mt-4 text-sm text-center">
+                <RouterLink :to="{ name: 'findpass' }" class="text-secondary">비밀번호 찾기</RouterLink>
+              </span>
+            </div>
           </div>
         </div>
       </div>

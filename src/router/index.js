@@ -74,7 +74,7 @@ const router = createRouter({
           path: 'scan',
           name: 'spotScan',
           component: () => import('@/components/spot/SpotScan.vue'),
-        }
+        },
       ],
     },
     {
@@ -119,6 +119,11 @@ const router = createRouter({
           path: 'signup',
           name: 'signup',
           component: () => import('@/components/user/UserSignUp.vue'),
+        },
+        {
+          path: 'findpass',
+          name: 'findpass',
+          component: () => import('@/components/user/UserFindPass.vue'),
         },
       ],
     },

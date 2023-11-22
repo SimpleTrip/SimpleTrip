@@ -1,18 +1,41 @@
 <script setup>
-import { onMounted } from 'vue';
-
-//Vue Material Kit 2 components
-import MaterialInput from '@/components/material/MaterialInput.vue';
-import MaterialButton from '@/components/material/MaterialButton.vue';
-
-// material-input
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { joinUser } from '@/api/user.js';
 import setMaterialInput from '@/assets/js/material-input';
+
+const router = useRouter();
+const userInput = ref({
+  userId: '',
+  userPw: '',
+  userSex: '',
+  userAge: '',
+  userExit: false,
+});
+
+const clickJoin = async () => {
+  if (userInput.value.userId == '' || userInput.value.userPw == '' || userInput.value.userSex == '' || userInput.value.userAge == '') {
+    alert('모든 정보를 입력해주세요.');
+  } else {
+    await joinUser(
+      userInput.value,
+      (success) => {
+        alert('회원가입이 완료되었습니다.');
+        router.replace({ name: 'login' });
+      },
+      (fail) => {
+        alert(fail.dataHeader.resultMessage);
+      }
+    );
+  }
+};
+
 onMounted(() => {
   setMaterialInput();
 });
 </script>
 <template>
-  <div class="container my-auto">
+  <div class="my-auto w-100">
     <div class="row my-2">
       <div class="col-lg-4 col-md-8 col-12 mx-auto">
         <div class="card z-index-0 fadeIn3 fadeInBottom">
@@ -40,22 +63,28 @@ onMounted(() => {
           </div>
           <div class="card-body">
             <form role="form" class="text-start">
-              <MaterialInput id="id" class="input-group-outline my-3" :label="{ text: '아이디', class: 'form-label' }" />
-              <MaterialInput id="password" class="input-group-outline mb-3" :label="{ text: '비밀번호', class: 'form-label' }" type="password" />
-              <MaterialInput id="name" class="input-group-outline mb-3" :label="{ text: '이름', class: 'form-label' }" />
-
+              <div class="input-group input-group-outline my-3">
+                <label class="form-label">아이디</label>
+                <input type="text" class="form-control" v-model="userInput.userId" />
+              </div>
+              <div class="input-group input-group-outline my-3">
+                <label class="form-label">비밀번호</label>
+                <input type="password" class="form-control" v-model="userInput.userPw" />
+              </div>
               <div class="my-3">
-                <select class="select-option form-select text-gray" id="sex" style="padding-left: 10px; padding-right: 10px">
-                  <option disabled selected>성별</option>
-                  <option value="man">남자</option>
-                  <option value="woman">여자</option>
+                <select class="select-option form-select text-gray" id="sex" style="padding-left: 10px; padding-right: 10px" v-model="userInput.userSex">
+                  <option value="" disabled selected>성별</option>
+                  <option value="M">남자</option>
+                  <option value="F">여자</option>
                 </select>
               </div>
+              <div class="input-group input-group-outline my-3">
+                <label class="form-label">나이</label>
+                <input type="number" min="10" class="form-control" v-model="userInput.userAge" />
+              </div>
 
-              <MaterialInput id="age" class="input-group-outline mb-3" :label="{ text: '나이', class: 'form-label' }" />
-
-              <div class="text-center">
-                <MaterialButton class="my-4 mb-2" variant="gradient" color="success" fullWidth>등록하기</MaterialButton>
+              <div class="text-center" style="padding-top: 20px; padding-bottom: 10px">
+                <a @click="clickJoin" class="btn btn-success btn-md" style="width: 100%; margin: 0px">등록하기</a>
               </div>
               <p class="mt-4 text-sm text-center">
                 계정이 이미 있으신가요?

@@ -44,15 +44,20 @@ const clickLogout = () => {
         <ul class="navbar-nav navbar-nav-hover ms-auto">
           <template v-if="isLogin">
             <li class="nav-item">
-              <a v-if="isLogin" class="nav-link" @click="clickLogout">로그아웃</a>
+              <a v-if="isLogin" class="nav-link" @click="clickLogout" href="javascript:;">로그아웃</a>
             </li>
             <li class="nav-item">
               <router-link v-if="isLogin" class="nav-link" :to="{ name: 'info' }">회원정보</router-link>
             </li>
           </template>
-          <li v-else class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'login' }">로그인</router-link>
-          </li>
+          <template v-else>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{ name: 'login' }">로그인</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{ name: 'signup' }">회원가입</router-link>
+            </li>
+          </template>
           <li>
             <router-link class="nav-link" :to="{ name: 'articles' }">게시판</router-link>
           </li>
