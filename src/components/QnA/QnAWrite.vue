@@ -29,7 +29,7 @@ const onClickWrite = () => {
 const writeQna = () => {
   const params = {
     question: question.value,
-    questionUserId: userInfo.value.user.userId,
+    questionUserId: userInfo.value.userId,
   };
   writeQnA(
     params,

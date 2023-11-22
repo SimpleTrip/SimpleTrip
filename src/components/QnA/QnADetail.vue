@@ -212,11 +212,11 @@ const goBack = () => {
 
   <div class="d-flex justify-content-center gap-2">
     <a @click="goBack" class="btn btn-secondary btn-md">목록으로 돌아가기</a>
-    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null && userInfo.user.userRole == 'ROLE_ADMIN'" replace>답변 작성</router-link>
-    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null && userInfo.user.userRole == 'ROLE_ADMIN'" replace>답변 수정</router-link>
-    <a @click="deleteAns" class="btn btn-warning btn-md" v-if="qna.answer != null && userInfo.user.userRole == 'ROLE_ADMIN'">답변 삭제</a>
+    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer == null && userInfo.userRole == 'ROLE_ADMIN'" replace>답변 작성</router-link>
+    <router-link :to="{ name: 'QnAAnswer', query: { qnaNo: qna.qnaNo } }" class="btn btn-success btn-md" v-if="qna.answer != null && userInfo.userRole == 'ROLE_ADMIN'" replace>답변 수정</router-link>
+    <a @click="deleteAns" class="btn btn-warning btn-md" v-if="qna.answer != null && userInfo.userRole == 'ROLE_ADMIN'">답변 삭제</a>
 
-    <a @click="deleteQna" class="btn btn-danger btn-md" v-if="userInfo.user.userRole == 'ROLE_ADMIN' || userInfo.userId == qna.questionUserId">QnA 삭제</a>
+    <a @click="deleteQna" class="btn btn-danger btn-md" v-if="userInfo.userRole == 'ROLE_ADMIN' || userInfo.userId == qna.questionUserId">QnA 삭제</a>
   </div>
 </template>
 
