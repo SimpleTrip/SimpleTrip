@@ -28,8 +28,13 @@ const writeComment = async (comment, success, fail) => {
 };
 
 const rewriteComment = async (comment, success, fail) => {
+  const accessToken = cookies.get("accessToken");
   await articleAxios
-  .put(`${domain}/rewrite`, comment)
+  .put(`${domain}/rewrite`, comment, {
+    headers: {
+      Authorization: accessToken && `Bearer ${accessToken}`,
+    },
+  })
   .then((data) => {
     success(data.data)
   })

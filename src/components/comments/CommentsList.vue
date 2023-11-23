@@ -1,6 +1,6 @@
 <script setup>
 import CommentsItems from '@/components/comments/CommentsItems.vue';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUpdated } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia'
 import { useCookies } from 'vue3-cookies';
@@ -61,6 +61,10 @@ const clickWrite = async () => {
             userInfo.value = refreshData.dataBody
             await writeComment(
               comment,
+              // success
+              () => {
+                //
+              },
               (fail) => {
                 alert(fail.dataHeader.resultMessage)
               }
@@ -85,6 +89,10 @@ const updateComment = async () => {
 onMounted(() => {
   setCommentList();
 });
+
+onUpdated(() => {
+  setCommentList();
+})
 </script>
 
 <template>
