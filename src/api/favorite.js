@@ -36,7 +36,6 @@ function getFavoriteList(userId, success, fail) {
     success(data.data);
   })
   .catch((data) => {
-    console.log(data) 
     fail(data.response.data);
   });
 }

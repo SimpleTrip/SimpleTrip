@@ -67,6 +67,7 @@ const clickLogout = () => {
               <li>
                 <router-link class="dropdown-item" :to="{ name: 'spotScan' }">여행지 찾기</router-link>
                 <router-link class="dropdown-item" :to="{ name: 'plan' }">여행 계획</router-link>
+                <router-link class="dropdown-item" :to="{ name: 'spotPopular' }">여행 추천</router-link>
               </li>
             </ul>
           </li>

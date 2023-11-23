@@ -26,7 +26,7 @@ function addSpot(userId, spot, success, fail) {
 function getPopularSpotList(user, success, fail) {
     const accessToken = cookies.get("accessToken");
     spotAxios
-    .get(`${domain}`, {
+    .get(`${domain}/${user.userId}`, {
         headers: {
             Authorization: accessToken && `Bearer ${accessToken}`,
         },

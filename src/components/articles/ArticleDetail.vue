@@ -70,8 +70,6 @@ const deleteHandler = function () {
       router.replace({ name: 'articleList'})
     },
     async (fail) => {
-      console.log('@vue', article.value.articleId, article.value.userId)
-      console.log(fail)
       if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
         const refreshData = await refresh()
         if (refreshData != null) {
