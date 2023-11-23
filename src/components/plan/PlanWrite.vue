@@ -10,6 +10,7 @@ import { useCookies } from 'vue3-cookies';
 import { refresh } from '@/util/tokenUtil';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
+import { VueDraggableNext } from 'vue-draggable-next';
 
 const userStore = useUserStore();
 const { isLogin, userInfo } = storeToRefs(userStore);
@@ -265,9 +266,10 @@ const clickList = () => {
             <div style="text-align: center; width: 100%; padding: 10px">
               <span style="font-size: 20px">나의 여행 코스</span>
             </div>
-            <div style="height: 502px; overflow-y: scroll; padding: 4px">
+
+            <VueDraggableNext style="height: 502px; overflow-y: scroll; padding: 4px" :list="plusList">
               <PlacePlusCard v-for="(place, index) in plusList" :key="place.id" :place="place" :idx="index" @click-minus="clickMinus" @click-detail="showDetail" />
-            </div>
+            </VueDraggableNext>
           </div>
         </div>
       </div>
