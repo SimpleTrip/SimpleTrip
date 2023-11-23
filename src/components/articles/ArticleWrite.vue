@@ -2,14 +2,25 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia'
+import { useCookies } from 'vue3-cookies';
 import { useUserStore } from '@/stores/user'
 import { writeArticle } from '@/api/article.js';
+import { refresh } from '@/util/tokenUtil'
 
 
 const userStore = useUserStore()
-const { userInfo } = storeToRefs(userStore)
+const { isLogin, userInfo } = storeToRefs(userStore)
+const { cookies } = useCookies()
 
 const router = useRouter();
+
+const resetAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
 
 const article = ref({
   articleTitle: '',
@@ -18,14 +29,41 @@ const article = ref({
 });
 
 const writeHandler = function () {
-  const response = confirm('등록하시겠습니까?');
-  if (response) {
-    writeArticle(article.value);
-    alert('등록 완료');
-    router.push({ name: 'articleList' });
-  } else {
-    alert('등록 실패');
-  }
+  writeArticle(
+    article.value,
+    // success
+    () => {
+      router.push({ name: 'articleList' })
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh()
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody
+            await writeArticle(
+              article.value,
+              // success
+              () => {
+                alert('글 등록 완료!')
+                router.push({ name: 'articleList' })
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage)
+                router.go(-1)
+              }
+            )
+          } else {
+            resetAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage)
+        router.go(-1)
+      }
+    }
+  );
 };
 
 const resetArticle = function () {
@@ -71,7 +109,8 @@ onMounted(() => {
         <h5>내용</h5>
         <div class="input-group input-group-outline">
           <label class="form-label"></label>
-          <textarea v-model="article.articleContent" class="text-area form-contol form-control-md col-12" rows="5"></textarea>
+          <textarea v-model="article.articleContent" class="text-area form-contol form-control-md col-12"
+            rows="5"></textarea>
         </div>
       </div>
     </div>

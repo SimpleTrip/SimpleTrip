@@ -1,91 +1,150 @@
 <script setup>
-import { ref, onMounted } from "vue"
-import { useRoute } from 'vue-router';
+import { ref, watch, onMounted } from "vue"
+import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
+import { useCookies } from 'vue3-cookies';
 import { getPlace } from '@/api/place.js';
+import { useUserStore } from '@/stores/user';
+
+import { refresh } from '@/util/tokenUtil';
+
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+
 const route = useRoute();
+const router = useRouter()
 
 const placeId = ref(route.params.placeId)
 const testPlace = ref({})
+const { cookies } = useCookies()
+
+
+const resetAuth = () => {
+    cookies.remove('refreshToken', '/', 'localhost');
+    cookies.remove('accessToken', '/', 'localhost');
+    isLogin.value = false;
+    userInfo.value = {};
+    router.replace({ name: 'login' });
+};
 
 const setPlace = async function () {
+    await getPlace(
+        placeId.value,
+        (success) => {
+            testPlace.value = success.dataBody;
+            drawMap()
+        },
+        async (fail) => {
+            if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                const refreshData = await refresh();
+                if (refreshData != null) {
+                    if (refreshData.dataHeader.successCode == 0) {
+                        // access만 만료 됐었어서 refresh로 새롭게 가져옴
+                        userInfo.value = refreshData.dataBody;
+                        // 새로운 토큰으로 재시도
+                        await getPlace(
+                            placeId.value,
+                            (success) => {
+                                // refresh 후 등록 성공
+                                testPlace.value = success.dataBody;
+                                drawMap()
 
-    await getPlace(placeId.value, ({ data }) => {
-        testPlace.value = data;
-
-        console.log(testPlace.value)
-
-        if (testPlace.value != "") {
-            if (window.kakao && window.kakao.maps) {
-                // 
+                            },
+                            (fail) => {
+                                // 새로운 토큰으로 했는데 서버에서 에러남
+                                // 로그인 관련 문제 아님
+                                alert(fail.dataHeader.resultMessage);
+                                router.go(-1);
+                            }
+                        );
+                    } else {
+                        // 로그인 만료(access/refresh 둘 다)
+                        // 쿠키에 아무것도 없음
+                        resetAuth();
+                        alert(fail.dataHeader.resultMessage);
+                        router.push({ name: 'main' })
+                    }
+                }
             } else {
-                const script = document.createElement("script");
-                script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-                    }&libraries=services,clusterer`;
-                /* global kakao */
-                document.head.appendChild(script);
+                // UNAUTHORIZED 이외의 오류
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
             }
-
-            let mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-                mapOption = {
-                    center: new kakao.maps.LatLng(testPlace.value.placeLat, testPlace.value.placeLng), // 지도의 중심좌표
-                    // center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                    level: 3 // 지도의 확대 레벨
-                };
-
-            let map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-            // 지도를 클릭한 위치에 표출할 마커입니다
-            let marker = new kakao.maps.Marker({
-                // 지도 중심좌표에 마커를 생성합니다 
-                position: map.getCenter()
-            });
-            // 지도에 마커를 표시합니다
-            marker.setMap(map);
-
-            let overlay = null;
-
-            // 커스텀 오버레이에 표시할 컨텐츠 입니다
-            // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
-            // 별도의 이벤트 메소드를 제공하지 않습니다 
-            let content = '<div class="wrap">' +
-                '    <div class="info">' +
-                '        <div id="place-name" class="title">' +
-                `            ${testPlace.value.placeName}` +
-                '        </div>' +
-                '        <div class="body">' +
-                '            <div class="img">' +
-                `                <img id="thumb-nail" src="${testPlace.value.placeImgUrl}" width="73" height="70">` +
-                '           </div>' +
-                '            <div class="desc">' +
-                `                <div id="place-addr" class="ellipsis">${testPlace.value.placeAddr}</div>` +
-                `                <div id="place-type" class="jibun ellipsis" style="color:#4caf50">${testPlace.value.placeType}</div>` +
-                '            </div>' +
-                '        </div>' +
-                '    </div>' +
-                '</div>';
-
-            // 마커 위에 커스텀오버레이를 표시합니다
-            // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
-            overlay = new kakao.maps.CustomOverlay({
-                content: content,
-                map: map,
-                position: marker.getPosition()
-            });
-
-            // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
-            kakao.maps.event.addListener(marker, 'click', function () {
-                overlay.setMap(map);
-            });
         }
-    })
+    )
+}
+
+const drawMap = () => {
+    if (testPlace.value != "") {
+        if (window.kakao && window.kakao.maps) {
+            // 
+        } else {
+            const script = document.createElement("script");
+            script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+                }&libraries=services,clusterer`;
+            /* global kakao */
+            document.head.appendChild(script);
+        }
+
+        let mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = {
+                center: new kakao.maps.LatLng(testPlace.value.placeLat, testPlace.value.placeLng), // 지도의 중심좌표
+                // center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                level: 3 // 지도의 확대 레벨
+            };
+
+        let map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+        // 지도를 클릭한 위치에 표출할 마커입니다
+        let marker = new kakao.maps.Marker({
+            // 지도 중심좌표에 마커를 생성합니다 
+            position: map.getCenter()
+        });
+        // 지도에 마커를 표시합니다
+        marker.setMap(map);
+
+        let overlay = null;
+
+        // 커스텀 오버레이에 표시할 컨텐츠 입니다
+        // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
+        // 별도의 이벤트 메소드를 제공하지 않습니다 
+        let content = '<div class="wrap">' +
+            '    <div class="info">' +
+            '        <div id="place-name" class="title">' +
+            `            ${testPlace.value.placeName}` +
+            '        </div>' +
+            '        <div class="body">' +
+            '            <div class="img">' +
+            `                <img id="thumb-nail" src="${testPlace.value.placeImgUrl}" width="73" height="70">` +
+            '           </div>' +
+            '            <div class="desc">' +
+            `                <div id="place-addr" class="ellipsis">${testPlace.value.placeAddr}</div>` +
+            `                <div id="place-type" class="jibun ellipsis" style="color:#4caf50">${testPlace.value.placeType}</div>` +
+            '            </div>' +
+            '        </div>' +
+            '    </div>' +
+            '</div>';
+
+        // 마커 위에 커스텀오버레이를 표시합니다
+        // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
+        overlay = new kakao.maps.CustomOverlay({
+            content: content,
+            map: map,
+            position: marker.getPosition()
+        });
+
+        // 마커를 클릭했을 때 커스텀 오버레이를 표시합니다
+        kakao.maps.event.addListener(marker, 'click', function () {
+            overlay.setMap(map);
+        });
+    }
 }
 
 const setMap = async () => {
     await setPlace()
 }
 
-onMounted(() => setMap()
-)
+onMounted(() => setMap())
 </script>
 
 <template>

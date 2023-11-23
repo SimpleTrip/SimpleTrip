@@ -1,11 +1,25 @@
 <script setup>
 import { defineProps, ref, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia'
+import { useCookies } from 'vue3-cookies';
 import { useUserStore } from '@/stores/user'
 import { rewriteComment, deleteComment } from '@/api/comment.js';
+import { refresh } from '@/util/tokenUtil'
 
 const userStore = useUserStore()
 const { isLogin, userInfo } = storeToRefs(userStore)
+const { cookies } = useCookies()
+
+const router = useRouter();
+
+const resetAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
 
 const emit = defineEmits(['deleteComment', 'rewriteComment']);
 
@@ -22,33 +36,92 @@ const clickReWriteIcon = () => {
 
 const clickReWrite = async () => {
   props.comment.commentContent = reWriteInput.value;
-  await rewriteComment(props.comment, ({ data }) => { });
+  await rewriteComment(
+    props.comment,
+    // success
+    () => {
+      // 
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh()
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody
+            await rewriteComment(
+              props.comment,
+              // success
+              () => {
+                // 
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage)
+              }
+            )
+          } else {
+            resetAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage)
+      }
+    }
+  );
   clickReWriteIcon();
   emit('rewriteComment');
 };
 
 const clickDelete = async () => {
-  await deleteComment(props.comment.commentNo, ({ data }) => { });
-  emit('deleteComment');
+  await deleteComment(
+    props.comment.commentNo,
+    props.comment.commentUserId,
+    // success
+    () => {
+      alert('댓글이 삭제되었습니다.')
+      emit('deleteComment');
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh()
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody
+            await deleteComment(
+              props.comment.commentNo,
+              props.comment.commentUserId,
+              // success
+              () => {
+                alert('댓글이 삭제되었습니다.')
+                emit('deleteComment');
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage)
+              }
+            )
+          } else {
+            resetAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage)
+      }
+    }
+  );
 };
 
 const canClick = ref(false)
 
 const checkOwner = function (comment, isLogin, userInfo) {
-  console.log('isLogin@CommentItem', isLogin.value)
   if (userInfo.value) canClick.value = isLogin.value && (comment.commentUserId === userInfo.value.userId)
   else canClick.value = false
-  console.log('왜 호출이 안될까')
 }
 
 onMounted(() => {
-  console.log('?')
-  // console.log(userInfo.value.userId)
-  // console.log(props.comment.commentUserId)
   watch([userInfo.value, props.comment], () => {
     checkOwner(props.comment, isLogin, userInfo)
   }, { immediate: true })
-  console.log('!')
 });
 </script>
 

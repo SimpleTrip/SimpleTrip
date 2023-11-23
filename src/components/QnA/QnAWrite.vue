@@ -33,7 +33,8 @@ const writeQna = () => {
   };
   writeQnA(
     params,
-    (success) => {
+    // success
+    () => {
       alert('QnA가 작성 되었습니다.');
       router.push({ name: 'QnAList' });
     },
@@ -45,7 +46,9 @@ const writeQna = () => {
             userInfo.value = refreshData.dataBody;
             await writeQnA(
               params,
-              (success) => {
+              // success
+              () => {
+                console.log('여기를 확인해보자!')
                 alert('QnA가 작성 되었습니다.');
                 router.push({ name: 'QnAList' });
               },

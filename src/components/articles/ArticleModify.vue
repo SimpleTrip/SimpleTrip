@@ -1,29 +1,102 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia'
+import { useCookies } from 'vue3-cookies';
+
+import { useUserStore } from '@/stores/user'
 import { getArticle, modifyArticle } from '@/api/article.js';
+import { refresh } from '@/util/tokenUtil'
 
 const route = useRoute();
 const router = useRouter();
 
+const userStore = useUserStore()
+const { isLogin, userInfo } = storeToRefs(userStore)
+const { cookies } = useCookies()
+
 const article = ref({});
 const articleId = ref(route.params.articleId);
 
+const resetAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
+
 const setArticle = function () {
-  getArticle(articleId.value, ({ data }) => {
-    article.value = data;
-  });
+  getArticle(
+    articleId.value,
+    (success) => {
+      article.value = success.dataBody
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh()
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody
+            await getArticle(
+              articleId.value,
+              (success) => {
+                article.value = success.dataBody
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage)
+                router.push({ name: 'articleList'})
+              }
+            )
+          } else {
+            resetAuth()
+            alert(fail.dataHeader.resultMessage)
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage)
+        router.push({ name: 'articleList'})
+      }
+    },
+  )
 };
 
 const modifyHandler = function () {
-  const response = confirm('수정하시겠습니까?');
-  if (response) {
-    modifyArticle(articleId.value, article.value);
-    alert('수정 완료');
-    router.push({ name: 'articleList' });
-  } else {
-    alert('수정 실패');
-  }
+  modifyArticle(articleId.value, article.value,
+    // success
+    () => {
+      alert('글이 수정 되었습니다.');
+      router.push({ name: 'articleList' });
+    },
+    async (fail) => {
+      if (fail.dataHeader.resultCode == ' UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+        const refreshData = await refresh();
+        if (refreshData != null) {
+          if (refreshData.dataHeader.successCode == 0) {
+            userInfo.value = refreshData.dataBody;
+            await modifyArticle(
+              articleId.value, article.value,
+              // success
+              () => {
+                alert('글이 수정 되었습니다.');
+                router.push({ name: 'articleList' });
+              },
+              (fail) => {
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+              }
+            );
+          } else {
+            resetAuth();
+            alert(fail.dataHeader.resultMessage);
+          }
+        }
+      } else {
+        alert(fail.dataHeader.resultMessage);
+        router.go(-1);
+      }
+    }
+  );
 };
 
 const resetArticle = function () {
@@ -69,7 +142,8 @@ onMounted(() => {
         <h5>내용</h5>
         <div class="input-group input-group-outline">
           <label class="form-label"></label>
-          <textarea v-model="article.articleContent" class="text-area form-contol form-control-md col-12" rows="5"></textarea>
+          <textarea v-model="article.articleContent" class="text-area form-contol form-control-md col-12"
+            rows="5"></textarea>
         </div>
       </div>
     </div>
