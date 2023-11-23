@@ -12,6 +12,14 @@ const userStore = useUserStore();
 const { isLogin, userInfo } = storeToRefs(userStore);
 const { cookies } = useCookies();
 
+const noAuth = () => {
+  cookies.remove('refreshToken', '/', 'localhost');
+  cookies.remove('accessToken', '/', 'localhost');
+  isLogin.value = false;
+  userInfo.value = {};
+  router.replace({ name: 'login' });
+};
+
 const router = useRouter();
 const route = useRoute();
 
