@@ -8,7 +8,19 @@ const domain = "/places";
 const { cookies } = useCookies();
 
 function registPlace(place, success, fail) {
-  placeAxios.post(`${domain}`, place).then(success).catch(fail);
+  const accessToken = cookies.get("accessToken");
+  placeAxios
+  .post(`${domain}`, place, {
+    headers: {
+      Authorization: accessToken && `Bearer ${accessToken}`,
+    }
+  })
+  .then((data) => {
+    success(data.data);
+  })
+  .catch((data) => {
+    fail(data.response.data);
+  });
 }
 
 function getPlace(placeId, success, fail) {
