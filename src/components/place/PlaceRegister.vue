@@ -42,16 +42,20 @@ const place = ref({
 
 const uploadedFile = ref({})
 
-const registHandler = function () {
+const registHandler = async function () {
 
-    registPlace(
+    await registPlace(
         place.value,
-        (success) => {
+        async (success) => {
             if (success.dataBody) place.value = success.dataBody;
             // Image
-            uploadFile()
+            await uploadFile()
             alert('장소 등록 완료!')
-            router.push({ name: 'placeList'}, () => this.router.go(0))
+
+            // Introduce a delay before fetching updated data
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Adjust the delay time as needed
+
+            router.push({ name: 'placeList' }, () => location.reload())
         },
         async (fail) => {
             if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
@@ -63,13 +67,18 @@ const registHandler = function () {
                         // 새로운 토큰으로 재시도
                         await registPlace(
                             place.value,
-                            (success) => {
+                            async (success) => {
                                 // refresh 후 등록 성공
                                 if (success.dataBody) place.value = success.dataBody;
                                 // Image
-                                uploadFile()
+                                await uploadFile()
                                 alert('장소 등록 완료!')
-                                router.push({ name: 'placeList'}, () => this.router.go(0))
+
+                                // Introduce a delay before fetching updated data
+                                await new Promise(resolve => setTimeout(resolve, 1000)); // Adjust the delay time as needed
+
+
+                                router.push({ name: 'placeList' }, () => location.reload())
                             },
                             (fail) => {
                                 // 새로운 토큰으로 했는데 서버에서 에러남
@@ -126,7 +135,7 @@ const setThumbNail = function (file) {
     reader.readAsDataURL(file)
 }
 
-const uploadFile = function () {
+const uploadFile = async function () {
 
     // Set the Region 
     AWS.config.update({

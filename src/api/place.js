@@ -7,7 +7,7 @@ const domain = "/places";
 
 const { cookies } = useCookies();
 
-function registPlace(place, success, fail) {
+async function registPlace(place, success, fail) {
   const accessToken = cookies.get("accessToken");
   placeAxios
   .post(`${domain}`, place, {
