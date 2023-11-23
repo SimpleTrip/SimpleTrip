@@ -71,11 +71,13 @@ function updateFavoriteStatus(newCards) {
 
 onMounted(async () => {
 
-    await getFavoriteList(userInfo.value.userId, ({ data }) => {
-        for (const favorite of data) {
-            favoriteList.value.push(favorite)
-        }
-    })
+    if (userInfo.value.userId) {
+        await getFavoriteList(userInfo.value.userId, ({ data }) => {
+            for (const favorite of data) {
+                favoriteList.value.push(favorite)
+            }
+        })
+    }
 
     setNavPills();
 
@@ -307,7 +309,7 @@ async function addFavoriteHandler(card) {
     );
 
     let favoriteToAdd = {};
-    favoriteToAdd.userId = 'ssafy';
+    favoriteToAdd.userId = userInfo.value.userId;
     favoriteToAdd.spotId = card.id;
     await addFavorite(
         favoriteToAdd,
@@ -345,7 +347,7 @@ async function addFavoriteHandler(card) {
 }
 async function deleteFavoriteHandler(card) {
     let favoriteToDelete = {};
-    favoriteToDelete.userId = 'ssafy';
+    favoriteToDelete.userId = userInfo.value.userId;
     favoriteToDelete.spotId = card.id
     await deleteFavorite(
         favoriteToDelete,

@@ -1,36 +1,104 @@
 <script setup>
 import { ref, onMounted } from "vue"
+import { useRouter } from 'vue-router';
+import { useCookies } from 'vue3-cookies';
 import { v4 as UUID } from 'uuid'
 import { registPlace } from '@/api/place.js';
 import AWS from 'aws-sdk'
 
+import { refresh } from '@/util/tokenUtil';
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
 
-const {VITE_BUCKET_NAME, VITE_BUCKET_REGION, VITE_IDENTITY_POOL_ID, VITE_IMAGE_URL} = import.meta.env
+const router = useRouter();
+
+const userStore = useUserStore();
+const { isLogin, userInfo } = storeToRefs(userStore);
+const { cookies } = useCookies();
+
+
+const resetAuth = () => {
+    cookies.remove('refreshToken', '/', 'localhost');
+    cookies.remove('accessToken', '/', 'localhost');
+    isLogin.value = false;
+    userInfo.value = {};
+    router.replace({ name: 'login' });
+};
+
+const { VITE_BUCKET_NAME, VITE_BUCKET_REGION, VITE_IDENTITY_POOL_ID, VITE_IMAGE_URL } = import.meta.env
+
+// 
+const place = ref({
+    placeName: '',
+    placeAddr: '',
+    placeType: '',
+    placeContent: '',
+    placeDate: '',
+    placeImgUrl: '',
+    // 
+    placeLat: '',
+    placeLng: ''
+})
 
 const uploadedFile = ref({})
 
 const registHandler = function () {
-    // Infos Without Image
-    const response = confirm('등록하시겠습니까?');
-    if (response) {
-        registPlace(place.value)
-        alert('등록 완료');
-        // router.push({ name: 'articleList' });
-    } else {
-        alert('등록 실패');
-    }
 
-    // Image
-    uploadFile()
+    registPlace(
+        place.value,
+        (success) => {
+            if (success.dataBody) place.value = success.dataBody;
+            // Image
+            uploadFile()
+            alert('등록 완료');
+        },
+        async (fail) => {
+            if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                const refreshData = await refresh();
+                if (refreshData != null) {
+                    if (refreshData.dataHeader.successCode == 0) {
+                        // access만 만료 됐었어서 refresh로 새롭게 가져옴
+                        userInfo.value = refreshData.dataBody;
+                        // 새로운 토큰으로 재시도
+                        await registPlace(
+                            place.value,
+                            (success) => {
+                                // refresh 후 등록 성공
+                                if (success.dataBody) place.value = success.dataBody;
+                                // Image
+                                uploadFile()
+                                alert('등록 완료');
+                            },
+                            (fail) => {
+                                // 새로운 토큰으로 했는데 서버에서 에러남
+                                // 로그인 관련 문제 아님
+                                alert(fail.dataHeader.resultMessage);
+                                router.go(-1);
+                            }
+                        );
+                    } else {
+                        // 로그인 만료(access/refresh 둘 다)
+                        // 쿠키에 아무것도 없음
+                        resetAuth();
+                        alert(fail.dataHeader.resultMessage);
+                    }
+                }
+            } else {
+                // UNAUTHORIZED 이외의 오류
+                alert(fail.dataHeader.resultMessage);
+                router.go(-1);
+            }
+        }
+    );
 }
 
 const changeHandler = function () {
     let placeName = document.getElementById("place-name")
-    if(placeName) placeName.innerHTML = place.value.placeName
+    if (placeName) placeName.innerHTML = place.value.placeName
     let placeAddr = document.getElementById("place-addr")
-    if(placeAddr) placeAddr.innerHTML = place.value.placeAddr
+    if (placeAddr) placeAddr.innerHTML = place.value.placeAddr
     let placeType = document.getElementById("place-type")
-    if(placeType) placeType.innerHTML = place.value.placeType
+    if (placeType) placeType.innerHTML = place.value.placeType
 }
 
 const getFileExtension = function (fileName) {
@@ -53,41 +121,41 @@ const setThumbNail = function (file) {
     let reader = new FileReader();
     reader.onload = function (e) {
         let thumbnail = document.getElementById("thumb-nail")
-        if(thumbnail) thumbnail.setAttribute("src", e.target.result)
+        if (thumbnail) thumbnail.setAttribute("src", e.target.result)
     }
     reader.readAsDataURL(file)
 }
 
 const uploadFile = function () {
 
-  // Set the Region 
-  AWS.config.update({
-    region: VITE_BUCKET_REGION,
-    credentials: new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: VITE_IDENTITY_POOL_ID
-    })
-  });
+    // Set the Region 
+    AWS.config.update({
+        region: VITE_BUCKET_REGION,
+        credentials: new AWS.CognitoIdentityCredentials({
+            IdentityPoolId: VITE_IDENTITY_POOL_ID
+        })
+    });
 
-  // Create S3 service object
-  const s3 = new AWS.S3({
-    apiVersion: '2006-03-01',
-    params: {
-      Bucket: VITE_BUCKET_NAME
+    // Create S3 service object
+    const s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: {
+            Bucket: VITE_BUCKET_NAME
+        }
+    });
+
+
+    s3.upload({
+        Key: place.value.uuid,
+        Body: uploadedFile.value,
+        ACL: 'public-read'
+    }, function (err, data) {
+        if (err) {
+            return alert('There was an error uploading your photo: ', err.message)
+        }
+        alert('Successfully uploaded photo')
     }
-  });
-
-
-  s3.upload({
-    Key: place.value.uuid,
-    Body: uploadedFile.value,
-    ACL: 'public-read'
-  }, function (err, data) {
-    if (err) {
-      return alert('There was an error uploading your photo: ', err.message)
-    }
-    alert('Successfully uploaded photo')
-  }
-  )
+    )
 }
 
 onMounted(() => {
@@ -168,19 +236,6 @@ onMounted(() => {
             overlay.setMap(map);
         });
     });
-})
-
-// 
-const place = ref({
-    placeName: '',
-    placeAddr: '',
-    placeType: '',
-    placeContent: '',
-    placeDate: '',
-    placeImgUrl: '',
-    // 
-    placeLat: '',
-    placeLng: ''
 })
 </script>
 
