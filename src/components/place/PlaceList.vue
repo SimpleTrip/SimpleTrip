@@ -28,7 +28,6 @@ const routePlace = function (placeId) {
 const setPlaceList = function () {
   listInfo.value.word = inputWord.value;
   getPlaceList(listInfo.value, ({ data }) => {
-    console.log(data)
     placeList.value = data.placeList
     // totalPgno.value = data.totalPgno;
     placeListPageCount.value = data.placeListPageCount

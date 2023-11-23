@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia'
+import { useCookies } from 'vue3-cookies';
+import { refresh } from '@/util/tokenUtil';
 import { useUserStore } from '@/stores/user'
 import { getFavoriteList } from '@/api/favorite.js'
 
@@ -9,14 +12,62 @@ const { isLogin, userInfo } = storeToRefs(userStore)
 
 const favoriteList = ref([])
 
+const { cookies } = useCookies()
+
+const router = useRouter();
+
+const resetAuth = () => {
+    cookies.remove('refreshToken', '/', 'localhost');
+    cookies.remove('accessToken', '/', 'localhost');
+    isLogin.value = false;
+    userInfo.value = {};
+    router.replace({ name: 'login' });
+};
+
 onMounted(() => {
-    console.log(userInfo.value.userId)
-    getFavoriteList(userInfo.value.userId, ({ data }) => {
-        console.log('data', data)
-        for (const favorite of data) {
-            favoriteList.value.push(favorite)
+    getFavoriteList(
+        userInfo.value.userId,
+        // success
+        (success) => {
+            for (const favorite of success.dataBody) {
+                favoriteList.value.push(favorite)
+            }
+        },
+        async (fail) => {
+            if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                const refreshData = await refresh();
+                if (refreshData != null) {
+                    if (refreshData.dataHeader.successCode == 0) {
+                        // access만 만료 됐었어서 refresh로 새롭게 가져옴
+                        userInfo.value = refreshData.dataBody;
+                        // 새로운 토큰으로 재시도
+                        await getFavoriteList(
+                            userInfo.value.userId,
+                            (success) => {
+                                // refresh 후 등록 성공
+                                for (const favorite of success.dataBody) {
+                                    favoriteList.value.push(favorite)
+                                }
+                            },
+                            (fail) => {
+                                // 새로운 토큰으로 했는데 서버에서 에러남
+                                // 로그인 관련 문제 아님
+                                alert(fail.dataHeader.resultMessage);
+                            }
+                        );
+                    } else {
+                        // 로그인 만료(access/refresh 둘 다)
+                        // 쿠키에 아무것도 없음
+                        resetAuth();
+                        alert(fail.dataHeader.resultMessage);
+                    }
+                }
+            } else {
+                // UNAUTHORIZED 이외의 오류
+                alert(fail.dataHeader.resultMessage);
+            }
         }
-    })
+    )
 })
 </script>
 

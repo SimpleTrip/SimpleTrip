@@ -11,10 +11,6 @@ const uploadedFile = ref({})
 
 const registHandler = function () {
     // Infos Without Image
-    console.log(`Vue -> Spring Boot -> DB`)
-    console.log(place.value)
-
-    //
     const response = confirm('등록하시겠습니까?');
     if (response) {
         registPlace(place.value)
@@ -25,7 +21,6 @@ const registHandler = function () {
     }
 
     // Image
-    console.log(`Vue -> AWS S3 : ${place.value.imageName}`)
     uploadFile()
 }
 
@@ -51,7 +46,6 @@ const setPlaceImage = function () {
     place.value.placeImgUrl = VITE_IMAGE_URL + uuid + getFileExtension(file.name)
     place.value.uuid = uuid + getFileExtension(file.name)
     uploadedFile.value = file
-    console.log(uploadedFile.value)
     setThumbNail(file)
 }
 
@@ -88,13 +82,10 @@ const uploadFile = function () {
     Body: uploadedFile.value,
     ACL: 'public-read'
   }, function (err, data) {
-    console.log(uploadedFile.value.uuid)
     if (err) {
-      console.log(err)
       return alert('There was an error uploading your photo: ', err.message)
     }
     alert('Successfully uploaded photo')
-    console.log(data)
   }
   )
 }

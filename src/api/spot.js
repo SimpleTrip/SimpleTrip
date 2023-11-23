@@ -1,20 +1,46 @@
 import { localAxios } from '../util/axiosUtil';
+import { useCookies } from "vue3-cookies";
 
 const spotAxios = localAxios();
 
 const domain = '/spots';
 
-function addSpot(spot, sucess, fail) {
-    spotAxios.post(`${domain}`, spot).then(sucess).catch(fail);
+const { cookies } = useCookies();
+
+function addSpot(userId, spot, success, fail) {
+    const accessToken = cookies.get("accessToken");
+    spotAxios
+    .post(`${domain}/${userId}`, spot, {
+        headers: {
+            Authorization: accessToken && `Bearer ${accessToken}`,
+        }
+    })
+    .then((data) => {
+        success(data.data);
+      })
+      .catch((data) => {
+        fail(data.response.data);
+    });
 }
 
-function getPopularSpotList(user, sucess, fail) {
-    spotAxios.get(`${domain}`, {
+function getPopularSpotList(user, success, fail) {
+    const accessToken = cookies.get("accessToken");
+    spotAxios
+    .get(`${domain}`, {
+        headers: {
+            Authorization: accessToken && `Bearer ${accessToken}`,
+        },
         params: {
             userSex: user.userSex,
             userAge: user.userAge
         }
-    }).then(sucess).catch(fail);
+    })
+    .then((data) => {
+        success(data.data);
+    })
+      .catch((data) => {
+        fail(data.response.data);
+    });
 }
 
 export { addSpot, getPopularSpotList }

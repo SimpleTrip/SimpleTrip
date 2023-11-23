@@ -1,13 +1,28 @@
 <script setup>
 import { ref, computed, watch, onMounted, toRaw } from "vue"
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia'
+import { useCookies } from 'vue3-cookies';
 import { useUserStore } from '@/stores/user'
+import { refresh } from '@/util/tokenUtil';
 import { getSido, getGugun, getMap } from '@/api/Map.js'
 import { addSpot } from '@/api/spot.js'
 import { addFavorite, getFavoriteList, deleteFavorite } from '@/api/favorite.js'
 
 // nav-pill
 import setNavPills from "@/assets/js/nav-pills.js";
+
+const resetAuth = () => {
+    cookies.remove('refreshToken', '/', 'localhost');
+    cookies.remove('accessToken', '/', 'localhost');
+    isLogin.value = false;
+    userInfo.value = {};
+    router.replace({ name: 'login' });
+};
+
+const router = useRouter();
+
+const { cookies } = useCookies()
 
 const userStore = useUserStore()
 const { isLogin, userInfo } = storeToRefs(userStore)
@@ -252,37 +267,118 @@ let setMap = function (list) {
     displayMarkers(list)
 }
 
-function addFavoriteHandler(card) {
-    const response = confirm('즐겨찾기를 추가하시겠습니까?');
-    if (response) {
-        let spotToAdd = {};
-        spotToAdd.spotId = card.id;
-        spotToAdd.spotName = card.name;
-        spotToAdd.spotAddr = card.detailAddr;
-        spotToAdd.spotImgUrl = card.imageUrl;
-        addSpot(spotToAdd);
+async function addFavoriteHandler(card) {
+    let spotToAdd = {};
+    spotToAdd.spotId = card.id;
+    spotToAdd.spotName = card.name;
+    spotToAdd.spotAddr = card.detailAddr;
+    spotToAdd.spotImgUrl = card.imageUrl;
+    await addSpot(
+        userInfo.value.userId, spotToAdd,
+        // success
+        () => {
+            alert('장소가 추가되었습니다.')
+        },
+        async (fail) => {
+            if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                const refreshData = await refresh();
+                if (refreshData != null) {
+                    if (refreshData.dataHeader.successCode == 0) {
+                        userInfo.value = refreshData.dataBody;
+                        await addSpot(
+                            userInfo.value.userId, spotToAdd,
+                            // success
+                            () => {
+                                alert('장소가 추가되었습니다.')
+                            },
+                            (fail) => {
+                                alert(fail.dataHeader.resultMessage);
+                            }
+                        );
+                    } else {
+                        resetAuth();
+                        alert(fail.dataHeader.resultMessage);
+                    }
+                }
+            } else {
+                alert(fail.dataHeader.resultMessage);
+            }
+        }
+    );
 
-        let favoriteToAdd = {};
-        favoriteToAdd.userId = 'ssafy';
-        favoriteToAdd.spotId = card.id;
-        addFavorite(favoriteToAdd);
-        alert('즐겨찾기 추가 성공!');
-    } else {
-        alert('즐겨찾기 추가 실패!');
-    }
+    let favoriteToAdd = {};
+    favoriteToAdd.userId = 'ssafy';
+    favoriteToAdd.spotId = card.id;
+    await addFavorite(
+        favoriteToAdd,
+        // success
+        () => {
+            alert('즐겨찾기가 추가되었습니다.')
+        },
+        async (fail) => {
+            if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                const refreshData = await refresh();
+                if (refreshData != null) {
+                    if (refreshData.dataHeader.successCode == 0) {
+                        userInfo.value = refreshData.dataBody;
+                        await addFavorite(
+                            favoriteToAdd,
+                            // success
+                            () => {
+                                alert('즐겨찾기가 추가되었습니다.')
+                            },
+                            (fail) => {
+                                alert(fail.dataHeader.resultMessage);
+                            }
+                        );
+                    } else {
+                        resetAuth();
+                        alert(fail.dataHeader.resultMessage);
+                    }
+                }
+            } else {
+                alert(fail.dataHeader.resultMessage);
+            }
+        }
+    );
     card.favorite = true;
 }
-function deleteFavoriteHandler(card) {
-    const response = confirm('즐겨찾기를 삭제하시겠습니까?');
-    if (response) {
-        let favoriteToDelete = {};
-        favoriteToDelete.userId = 'ssafy';
-        favoriteToDelete.spotId = card.id
-        deleteFavorite(favoriteToDelete);
-        alert('즐겨찾기 삭제 성공!');
-    } else {
-        alert('즐겨찾기 삭제 실패!');
-    }
+async function deleteFavoriteHandler(card) {
+    let favoriteToDelete = {};
+    favoriteToDelete.userId = 'ssafy';
+    favoriteToDelete.spotId = card.id
+    await deleteFavorite(
+        favoriteToDelete,
+        // success
+        () => {
+            alert('즐겨찾기가 삭제되었습니다.')
+        },
+        async (fail) => {
+            if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                const refreshData = await refresh();
+                if (refreshData != null) {
+                    if (refreshData.dataHeader.successCode == 0) {
+                        userInfo.value = refreshData.dataBody;
+                        await deleteFavorite(
+                            favoriteToDelete,
+                            // success
+                            () => {
+                                alert('즐겨찾기가 삭제되었습니다.')
+                            },
+                            (fail) => {
+                                alert(fail.dataHeader.resultMessage);
+                            }
+                        );
+                    } else {
+                        resetAuth();
+                        alert(fail.dataHeader.resultMessage);
+                    }
+                }
+            } else {
+                alert(fail.dataHeader.resultMessage);
+            }
+        }
+    );
     card.favorite = false
 }
 </script>
@@ -298,7 +394,8 @@ function deleteFavoriteHandler(card) {
                             <div class="row">
                                 <div class="col-6 mt-n5">
                                     <div class="p-3 pe-md-0">
-                                        <img v-if="card.imageUrl != ''" class="w-100 border-radius-md shadow-lg" :src="card.imageUrl">
+                                        <img v-if="card.imageUrl != ''" class="w-100 border-radius-md shadow-lg"
+                                            :src="card.imageUrl">
                                     </div>
                                 </div>
                                 <div class="col-12 my-auto">
@@ -309,8 +406,8 @@ function deleteFavoriteHandler(card) {
 
                                         <i v-if="isLogin" v-show="card.favorite" @click="deleteFavoriteHandler(card)"
                                             class="bi bi-star-fill" style="color:#FFEB3B;"></i>
-                                        <i v-if="isLogin" v-show="!card.favorite" @click="addFavoriteHandler(card)" class="bi bi-star"
-                                            style="color:#FFEB3B;"></i>
+                                        <i v-if="isLogin" v-show="!card.favorite" @click="addFavoriteHandler(card)"
+                                            class="bi bi-star" style="color:#FFEB3B;"></i>
                                     </div>
                                 </div>
                             </div>

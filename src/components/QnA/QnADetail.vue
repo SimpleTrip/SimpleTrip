@@ -45,6 +45,7 @@ const getqna = () => {
             await getQnA(
               qnaNo.value,
               (success) => {
+                // refresh 후 등록 성공
                 qna.value = success.dataBody;
               },
               (fail) => {
@@ -62,6 +63,7 @@ const getqna = () => {
           }
         }
       } else {
+        // UNAUTHORIZED 이외의 오류
         alert(fail.dataHeader.resultMessage);
         router.go(-1);
       }
