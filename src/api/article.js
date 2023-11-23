@@ -22,8 +22,13 @@ function writeArticle(article, success, fail) {
 }
 
 function getArticle(articleId, success, fail) {
+  const accessToken = cookies.get("accessToken");
   articleAxios
-    .get(`${domain}/${articleId}`)
+    .get(`${domain}/${articleId}`, {
+      headers: {
+        Authorization: accessToken && `Bearer ${accessToken}`,
+      }
+    })
     .then((data) => {
       success(data.data);
     })
