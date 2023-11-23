@@ -51,6 +51,7 @@ const registHandler = function () {
             // Image
             uploadFile()
             alert('장소 등록 완료!')
+            router.push({ name: 'placeList'}, () => this.router.go(0))
         },
         async (fail) => {
             if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
@@ -68,6 +69,7 @@ const registHandler = function () {
                                 // Image
                                 uploadFile()
                                 alert('장소 등록 완료!')
+                                router.push({ name: 'placeList'}, () => this.router.go(0))
                             },
                             (fail) => {
                                 // 새로운 토큰으로 했는데 서버에서 에러남
