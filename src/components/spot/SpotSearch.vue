@@ -59,7 +59,6 @@ watch(() => cards.value, (newCards) => {
 
 // Watcher for favoriteList
 watch(() => favoriteList.value, () => {
-    console.log(favoriteList)
     updateFavoriteStatus(cards.value);
 });
 
@@ -73,7 +72,6 @@ function updateFavoriteStatus(newCards) {
 onMounted(async () => {
 
     if (userInfo.value.userId) {
-        console.log(userInfo)
         await getFavoriteList(userInfo.value.userId,
             // success
             (success) => {
@@ -115,7 +113,6 @@ onMounted(async () => {
                     alert(fail.dataHeader.resultMessage);
                 }
             })
-        console.log(favoriteList)
         updateFavoriteStatus(cards.value);
     }
 

@@ -69,12 +69,9 @@ function deleteArticle(articleId, articleUserId, success, fail) {
     }
   })
   .then((data) => {
-    console.log("success", data);
     success(data.data);
   })
   .catch((data) => {
-    console.log(articleId, articleUserId)
-    console.log("fail", data);
     fail(data.response.data);
   });
 }
