@@ -50,7 +50,7 @@ const registHandler = function () {
             if (success.dataBody) place.value = success.dataBody;
             // Image
             uploadFile()
-            alert('등록 완료');
+            alert('장소 등록 완료!')
         },
         async (fail) => {
             if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
@@ -67,13 +67,12 @@ const registHandler = function () {
                                 if (success.dataBody) place.value = success.dataBody;
                                 // Image
                                 uploadFile()
-                                alert('등록 완료');
+                                alert('장소 등록 완료!')
                             },
                             (fail) => {
                                 // 새로운 토큰으로 했는데 서버에서 에러남
                                 // 로그인 관련 문제 아님
                                 alert(fail.dataHeader.resultMessage);
-                                router.go(-1);
                             }
                         );
                     } else {
@@ -86,7 +85,6 @@ const registHandler = function () {
             } else {
                 // UNAUTHORIZED 이외의 오류
                 alert(fail.dataHeader.resultMessage);
-                router.go(-1);
             }
         }
     );
@@ -153,7 +151,6 @@ const uploadFile = function () {
         if (err) {
             return alert('There was an error uploading your photo: ', err.message)
         }
-        alert('Successfully uploaded photo')
     }
     )
 }

@@ -59,6 +59,7 @@ watch(() => cards.value, (newCards) => {
 
 // Watcher for favoriteList
 watch(() => favoriteList.value, () => {
+    console.log(favoriteList)
     updateFavoriteStatus(cards.value);
 });
 
@@ -72,11 +73,50 @@ function updateFavoriteStatus(newCards) {
 onMounted(async () => {
 
     if (userInfo.value.userId) {
-        await getFavoriteList(userInfo.value.userId, ({ data }) => {
-            for (const favorite of data) {
-                favoriteList.value.push(favorite)
-            }
-        })
+        console.log(userInfo)
+        await getFavoriteList(userInfo.value.userId,
+            // success
+            (success) => {
+                for (const favorite of success.dataBody) {
+                    favoriteList.value.push(favorite)
+                }
+            },
+            async (fail) => {
+                if (fail.dataHeader.resultCode == 'UNAUTHORIZED' && fail.dataHeader.successCode == 1) {
+                    const refreshData = await refresh();
+                    if (refreshData != null) {
+                        if (refreshData.dataHeader.successCode == 0) {
+                            // access만 만료 됐었어서 refresh로 새롭게 가져옴
+                            userInfo.value = refreshData.dataBody;
+                            // 새로운 토큰으로 재시도
+                            await getFavoriteList(
+                                userInfo.value.userId,
+                                (success) => {
+                                    // refresh 후 등록 성공
+                                    for (const favorite of success.dataBody) {
+                                        favoriteList.value.push(favorite)
+                                    }
+                                },
+                                (fail) => {
+                                    // 새로운 토큰으로 했는데 서버에서 에러남
+                                    // 로그인 관련 문제 아님
+                                    alert(fail.dataHeader.resultMessage);
+                                }
+                            );
+                        } else {
+                            // 로그인 만료(access/refresh 둘 다)
+                            // 쿠키에 아무것도 없음
+                            resetAuth();
+                            alert(fail.dataHeader.resultMessage);
+                        }
+                    }
+                } else {
+                    // UNAUTHORIZED 이외의 오류
+                    alert(fail.dataHeader.resultMessage);
+                }
+            })
+        console.log(favoriteList)
+        updateFavoriteStatus(cards.value);
     }
 
     setNavPills();
