@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trip.user.model.mapper.UserMapper">
+
+	<resultMap type="user" id="user">
+		<result column="user_id" property="userId"/>
+		<result column="user_pw" property="userPw"/>
+		<result column="user_sex" property="userSex"/>
+		<result column="user_age" property="userAge"/>
+		<result column="user_role" property="userRole"/>
+		<result column="user_oauth" property="userOauth"/>
+		<result column="user_exit" property="userExit"/>
+	</resultMap>
+
+	<resultMap type="loginUser" id="loginUser">
+		<result column="user_id" property="userId"/>
+		<result column="user_role" property="userRole"/>
+	</resultMap>
+	
+	<insert id="insertUser" parameterType="user">
+		insert into users (user_id, user_pw, user_sex, user_age, user_role, user_oauth, user_exit)
+		values (#{userId}, #{userPw}, #{userSex}, #{userAge}, #{userRole}, #{userOauth}, #{userExit})
+	</insert>
+	
+	<select id="selectUser" parameterType="String" resultMap="user">
+		select user_id, user_pw, user_sex, user_age, user_role, user_oauth, user_exit
+		from users
+		where user_id = #{userId}
+	</select>
+
+	<select id="listUser" resultMap="user">
+		select user_id, user_pw, user_sex, user_age, user_role, user_oauth, user_exit
+		from users
+	</select>
+	
+	<update id="updateUserInfo" parameterType="map">
+		update users
+		set user_sex = #{userSex}, user_age = #{userAge}
+		where user_id = #{userId}
+		and user_pw = #{userPw}
+	</update>
+
+	<update id="changePass" parameterType="map">
+		update users
+		set user_pw = #{afterPass}
+		where user_id = #{userId}
+		and user_pw = #{beforePass}
+	</update>
+	
+	<update id="deleteUser" parameterType="String">
+		update users
+		set user_exit = true
+		where user_id = #{userId}
+	</update>
+	
+	<select id="loginUser" parameterType="user" resultMap="loginUser">
+		select user_id, user_role
+		from users
+		where user_id = #{userId} and user_pw = #{userPw}
+		and user_exit = 'N'
+	</select>
+
+	<select id="findpass" parameterType="map">
+		select user_pw
+		from users
+		where user_id = #{userId}
+		  and user_age = #{userAge}
+		  and user_sex = #{userSex}
+	</select>
+</mapper>
