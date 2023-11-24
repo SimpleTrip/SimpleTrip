@@ -2,21 +2,43 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import setMaterialInput from '@/assets/js/material-input';
-import { getMyPass } from '@/api/user.js';
+import { getMyPass, sendEmail, checkEmail } from '@/api/user.js';
 
 const router = useRouter();
-const userInput = ref({});
+const inputEmail = ref('');
+const isSend = ref(false);
+const authCode = ref('');
 
 onMounted(() => {
   setMaterialInput();
 });
 
+const goLogin = () => {
+  router.replace({ name: 'login' });
+};
+
 const clickFind = () => {
-  getMyPass(
-    userInput.value,
+  sendEmail(
+    inputEmail.value,
     (success) => {
-      alert(`비밀번호:  ${success.dataBody}`);
-      userInput.value = {};
+      alert('이메일이 발송되었습니다.');
+      isSend.value = true;
+    },
+    (fail) => {
+      alert('이메일 발송에 실패했습니다.');
+    }
+  );
+};
+
+const clickCheckCode = () => {
+  const params = {
+    email: inputEmail.value,
+    authCode: authCode.value,
+  };
+  checkEmail(
+    params,
+    (success) => {
+      alert(`비밀번호 : ${success.dataBody}`);
     },
     (fail) => {
       alert(fail.dataHeader.resultMessage);
@@ -36,26 +58,23 @@ const clickFind = () => {
             </div>
           </div>
           <div class="card-body">
-            <div class="text-center">
-              <div class="input-group input-group-static my-4 is-filled">
-                <label class="form-label">아이디</label>
-                <input type="text" class="form-control" v-model="userInput.userId" />
+            <form role="form" class="text-start">
+              <div class="input-group input-group-static is-filled my-4">
+                <label class="form-label">아이디로 이메일 인증</label>
+                <input type="text" class="form-control" v-model="inputEmail" />
               </div>
-              <div class="input-group input-group-static my-4 is-filled">
-                <label class="form-label">나이</label>
-                <input type="number" min="10" class="form-control" v-model="userInput.userAge" />
+              <div v-if="isSend" class="input-group input-group-static is-filled my-4">
+                <label class="form-label">인증코드</label>
+                <input type="text" class="form-control" v-model="authCode" />
               </div>
-              <div class="input-group input-group-static my-4 is-filled">
-                <label class="form-label">성별</label>
-                <select class="select-option form-select text-lightgray select-sex" id="sex" style="border-width: 0px; border-bottom-width: 1px; border-radius: 0px" v-model="userInput.userSex">
-                  <option value="" selected disabled>성별을 선택해주세요</option>
-                  <option value="M">남자</option>
-                  <option value="F">여자</option>
-                </select>
-              </div>
+            </form>
+            <div v-if="!isSend" class="d-flex justify-content-around" style="padding-top: 10px">
+              <a @click="goLogin" class="btn btn-secondary btn-md" style="width: 40%; margin: 0px">로그인으로 돌아가기</a>
+              <a @click="clickFind" class="btn btn-success btn-md" style="width: 40%; margin: 0px">이메일 보내기</a>
             </div>
-            <div class="text-center" style="padding-top: 20px; padding-bottom: 10px">
-              <a @click="clickFind" class="btn btn-success btn-md" style="width: 100%; margin: 0px">비밀번호 확인</a>
+            <div v-else class="d-flex justify-content-between" style="padding-top: 10px; padding-bottom: 10px">
+              <a @click="goLogin" class="btn btn-secondary btn-md" style="width: 40%; margin: 0px">로그인으로 돌아가기</a>
+              <a @click="clickCheckCode" class="btn btn-success btn-md" style="width: 40%; margin: 0px">인증하기</a>
             </div>
           </div>
         </div>

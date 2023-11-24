@@ -18,5 +18,5 @@ public interface UserMapper {
 	void deleteUser(String userId);
 	void changePass(Map<String, Object> map);
 	LoginUser loginUser(User user);
-	String findpass(Map<String, Object> map);
+	String findpass(String userId);
 }

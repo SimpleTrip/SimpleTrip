@@ -16,8 +16,11 @@ public interface UserService {
 	void updateUserInfo(Map<String, Object> map);
 	void withdrawUser(String userId);
 	void changePass(Map<String, Object> map);
-	String findpass(Map<String, Object> map);
+	String findpass(String userId);
 
 	LoginUser loginUser(User user, HttpServletResponse response);
 	JwtSecurityUser refreshToken(Map<String, String> tokens, HttpServletResponse response);
+
+	void sendCodeToEmail(String toEmail);
+	void verifiedCode(String email, String authCode);
 }

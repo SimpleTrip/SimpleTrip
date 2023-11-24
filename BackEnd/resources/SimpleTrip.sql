@@ -44,13 +44,13 @@ create table users
 
 -- 임시 user 생성
 insert into users (user_id, user_pw, user_sex, user_age, user_role, user_oauth, user_exit)
-values ('ssafy', '1234', 'F', 24, 'ROLE_USER', 'KAKAO', false);
+values ('uhyeon1009@gmail.com', '1234', 'F', 24, 'ROLE_USER', 'KAKAO', false);
 
 insert into users (user_id, user_pw, user_sex, user_age, user_role, user_oauth, user_exit)
-values ('test', '1234', 'F', 24, 'ROLE_ADMIN', 'KAKAO', false);
+values ('uhyeon19.edu@gmail.com', '1234', 'F', 24, 'ROLE_ADMIN', 'KAKAO', false);
 
 insert into users (user_id, user_pw, user_sex, user_age, user_role, user_oauth, user_exit)
-values ('ssafy2', '1234', 'F', 24, 'ROLE_USER', 'KAKAO', false);
+values ('test@test.com', '1234', 'F', 24, 'ROLE_USER', 'KAKAO', false);
 
 -- 게시글 테이블 생성
 create table articles

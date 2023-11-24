@@ -64,8 +64,8 @@ onMounted(() => {
           <div class="card-body">
             <form role="form" class="text-start">
               <div class="input-group input-group-outline my-3">
-                <label class="form-label">아이디</label>
-                <input type="text" class="form-control" v-model="userInput.userId" />
+                <label class="form-label">이메일</label>
+                <input type="email" class="form-control" v-model="userInput.userId" />
               </div>
               <div class="input-group input-group-outline my-3">
                 <label class="form-label">비밀번호</label>
