@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trip.favorite.model.mapper.FavoriteMapper">
+
+	<resultMap type="favorite" id="favorite">
+		<result column="favorite_id" property="favoriteId"/>
+		<result column="user_id" property="userId"/>
+		<result column="spot_id" property="spotId"/>
+	</resultMap>
+
+	<insert id="addFavorite" parameterType="favorite">
+		insert into favorites (user_id, spot_id)
+		values (#{userId}, #{spotId})
+	</insert>
+	
+	<select id="getFavoriteList" parameterType="string" resultMap="favorite">
+		select favorite_id, user_id, spot_id
+		from favorites
+		where user_id = #{userId}
+	</select>
+	
+	<delete id="deleteFavorite" parameterType="favorite">
+		delete from favorites
+		where user_id = #{userId} and spot_id = #{spotId}
+	</delete>
+	
+</mapper>

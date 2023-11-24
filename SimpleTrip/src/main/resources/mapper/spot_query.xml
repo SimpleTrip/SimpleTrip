@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trip.spot.model.mapper.SpotMapper">
+
+	<resultMap type="spot" id="spot">
+		<result column="spot_id" property="spotId" />
+		<result column="spot_name" property="spotName" />
+		<result column="spot_addr" property="spotAddr" />
+	</resultMap>
+
+	<insert id="addSpot" parameterType="spot">
+		insert into spots (spot_id, spot_name, spot_addr)
+		values (#{spotId}, #{spotName}, #{spotAddr})
+	</insert>
+
+</mapper>

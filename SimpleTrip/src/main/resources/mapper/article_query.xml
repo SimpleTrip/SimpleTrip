@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trip.article.model.mapper.ArticleMapper">
+	
+	<resultMap type="article" id="article">
+		<result column="article_id" property="articleId"/>
+		<result column="article_title" property="articleTitle"/>
+		<result column="article_content" property="articleContent"/>
+		<result column="user_id" property="userId"/>
+	</resultMap>
+	
+	
+	<insert id="write" parameterType="article">
+		insert into articles (article_title, article_content, user_id)
+		values (#{articleTitle}, #{articleContent}, #{userId})
+		<selectKey resultType="int" keyProperty="articleId" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="list" resultMap="article" parameterType="map">
+		select article_id, article_title, article_content, user_id
+		from articles
+		limit #{start}, #{listsize}
+	</select>
+
+	<select id="getListSize" resultType="int">
+		select count(article_id) from articles
+	</select>
+
+	<select id="view" parameterType="int" resultMap="article">
+		select article_id, article_title, article_content, user_id
+		from articles
+		where article_id = #{articleId}
+	</select>
+
+	<update id="modify" parameterType="article">
+		update articles
+		set article_title = #{articleTitle}, article_content = #{articleContent}, user_id = #{userId}
+		where article_id = #{articleId}
+	</update>		
+	
+	<delete id="delete" parameterType="int">
+		delete from articles
+		where article_id = #{articleId}
+	</delete>
+	
+</mapper>
