@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trip.spot.model.mapper.SpotMapper">
+
+	<resultMap type="spot" id="spot">
+		<result column="spot_id" property="spotId" />
+		<result column="spot_name" property="spotName" />
+		<result column="spot_addr" property="spotAddr" />
+		<result column="spot_img_url" property="spotImgUrl" />
+	</resultMap>
+
+	<resultMap type="user" id="user">
+		<result column="user_id" property="userId" />
+		<result column="user_sex" property="userSex" />
+		<result column="user_age" property="userAge" />
+	</resultMap>
+	
+	<insert id="addSpot" parameterType="spot">
+		insert ignore into spots (spot_id,
+		spot_name, spot_addr, spot_img_url)
+		values (#{spotId}, #{spotName}, #{spotAddr}, #{spotImgUrl})
+	</insert>
+	
+	<select id="getPopularSpotList" parameterType="user" resultMap="spot">
+		select spot_id, spot_name, spot_addr, spot_img_url
+		from users
+		join favorites
+		using (user_id)
+		join spots
+		using (spot_id)
+		where user_sex = #{userSex}
+		and user_age between ${userAge - 5} and ${userAge + 5}
+	</select>
+</mapper>
