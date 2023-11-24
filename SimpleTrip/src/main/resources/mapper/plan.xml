@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.trip.plan.model.mapper.PlanMapper">
+    <resultMap type="planDto" id="plan">
+        <result column="plan_no" property="planNo"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="plan_user_id" property="planUserId"/>
+        <result column="plan_title" property="planTitle"/>
+        <result column="plan_content" property="planContent"/>
+        <result column="regist_date" property="registDate"/>
+    </resultMap>
+
+    <resultMap type="planItemDto" id="planItem">
+        <result column="id" property="id"/>
+        <result column="plan_no" property="planNo"/>
+        <result column="place_name" property="placeName"/>
+        <result column="address_name" property="addressName"/>
+        <result column="road_address_name" property="roadAddressName"/>
+        <result column="category_group_code" property="categoryGroupCode"/>
+        <result column="category_group_name" property="categoryGroupName"/>
+        <result column="place_url" property="placeUrl"/>
+        <result column="x" property="x"/>
+        <result column="y" property="y"/>
+        <result column="memo" property="memo"/>
+    </resultMap>
+
+    <sql id="search">
+        <if test="key == 'content'">
+            where plan_content like concat('%', #{word}, '%')
+            and plan_title like concat('%', #{word}, '%')
+        </if>
+        <if test="key == 'author'">
+            where plan_user_id like concat('%', #{word}, '%')
+        </if>
+        <if test="key == 'no'">
+            where plan_no like concat('%', #{word}, '%')
+        </if>
+        <if test="key == 'all'">
+            where plan_no like concat('%', #{word}, '%')
+            or plan_content like concat('%', #{word}, '%')
+            or plan_title like concat('%', #{word}, '%')
+            or plan_user_id like concat('%', #{word}, '%')
+        </if>
+    </sql>
+
+    <select id="getPlanList" parameterType="map" resultMap="plan">
+        select plan_no, start_date, end_date, plan_user_id, plan_title, plan_content, regist_date
+        from plan
+        <include refid="search"></include>
+        order by plan_no desc
+        limit #{start}, #{listsize}
+    </select>
+
+    <select id="getListSize" resultType="int" parameterType="map">
+        select count(plan_no) from plan
+        <include refid="search"></include>
+    </select>
+
+    <insert id="setPlan" parameterType="map">
+        insert into plan (start_date, end_date, plan_user_id, plan_title, plan_content)
+        values (#{startDate}, #{endDate}, #{planUserId}, #{planTitle}, #{planContent})
+        <selectKey resultType="int" keyProperty="planNo" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+    </insert>
+
+    <insert id="setPlanItem" parameterType="map">
+        insert into plan_item (id, plan_no, place_name, address_name, road_address_name, category_group_code, category_group_name, category_name, place_url, x, y, memo)
+        values
+        <foreach collection="planItemList" item="planItem" separator=" , ">
+            (#{planItem.id}, #{planNo}, #{planItem.place_name}, #{planItem.address_name}, #{planItem.road_address_name}, #{planItem.category_group_code}, #{planItem.category_group_name}, #{planItem.category_name}, #{planItem.place_url}, #{planItem.x}, #{planItem.y}, #{planItem.memo})
+        </foreach>
+    </insert>
+
+    <select id="getPlan" parameterType="int" resultMap="plan">
+        select plan_no, start_date, end_date, plan_user_id, plan_title, plan_content, regist_date
+        from plan
+        where plan_no = #{planNo}
+    </select>
+
+    <select id="getPlanItem" parameterType="int" resultMap="planItem">
+        select id, plan_no, place_name, address_name, road_address_name, category_group_code, category_group_name, category_name, place_url, x, y, memo
+        from plan_item
+        where plan_no = #{planNo}
+    </select>
+
+    <delete id="deletePlanItem" parameterType="int">
+        delete
+        from plan_item
+        where plan_no = #{planNo}
+    </delete>
+
+    <delete id="deletePlan" parameterType="int">
+        delete
+        from plan
+        where plan_no = #{planNo}
+    </delete>
+</mapper>
