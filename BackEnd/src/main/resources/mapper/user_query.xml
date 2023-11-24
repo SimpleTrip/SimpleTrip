@@ -62,11 +62,9 @@
 		and user_exit = 'N'
 	</select>
 
-	<select id="findpass" parameterType="map">
+	<select id="findpass">
 		select user_pw
 		from users
 		where user_id = #{userId}
-		  and user_age = #{userAge}
-		  and user_sex = #{userSex}
 	</select>
 </mapper>

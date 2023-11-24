@@ -74,6 +74,20 @@ const getMyPass = async (params, success, fail) => {
     .catch((data) => fail(data.response.data));
 };
 
+const sendEmail = async (params, success, fail) => {
+  await local
+    .get(`${url}/sendEmail`, { params: { email: params } })
+    .then((data) => success(data.data))
+    .catch(async (data) => await fail(data.response.data));
+};
+
+const checkEmail = async (params, success, fail) => {
+  await local
+    .get(`${url}/checkEmail`, { params: params })
+    .then((data) => success(data.data))
+    .catch((data) => fail(data.response.data));
+};
+
 const logout = async (success, fail) => {
   const accessToken = cookies.get('accessToken');
   await local
@@ -86,4 +100,4 @@ const logout = async (success, fail) => {
     .catch((data) => fail(data.response.data));
 };
 
-export { loginUser, logout, joinUser, viewUser, withdrawUser, updateUserInfo, changePass, getMyPass };
+export { loginUser, logout, joinUser, viewUser, withdrawUser, updateUserInfo, changePass, getMyPass, sendEmail, checkEmail };

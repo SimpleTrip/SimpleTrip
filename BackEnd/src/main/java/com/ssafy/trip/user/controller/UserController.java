@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ssafy.trip.common.Message;
+import com.ssafy.trip.email.EmailRepository;
 import com.ssafy.trip.jwt.RefreshTokenRepository;
 import com.ssafy.trip.jwt.security.JwtSecurityUser;
 import com.ssafy.trip.user.exception.UserErrorCode;
@@ -35,11 +36,6 @@ public class UserController {
 	ResponseEntity<?> joinUser(@RequestBody User user) {
 		userService.joinUser(user);
 		return ResponseEntity.ok().body(Message.success());
-	}
-
-	@PostMapping("/findpass")
-	ResponseEntity<?> findpass(@RequestBody Map<String, Object> map) {
-		return ResponseEntity.ok().body(Message.success(userService.findpass(map)));
 	}
 
 	@GetMapping("/{userId}")
@@ -86,5 +82,17 @@ public class UserController {
 	@PostMapping("/refresh")
 	public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> tokens, HttpServletResponse response) {
 		return ResponseEntity.ok().body(Message.success(userService.refreshToken(tokens, response)));
+	}
+
+	@GetMapping("/sendEmail")
+	ResponseEntity<?> sendEmail(@RequestParam Map<String, Object> params) {
+		userService.sendCodeToEmail((String) params.get("email"));
+		return ResponseEntity.ok().body(Message.success());
+	}
+
+	@GetMapping("/checkEmail")
+	ResponseEntity<?> checkEmail(@RequestParam Map<String, Object> params) {
+		userService.verifiedCode((String) params.get("email"), (String) params.get("authCode"));
+		return ResponseEntity.ok().body(Message.success(userService.findpass((String) params.get("email"))));
 	}
 }

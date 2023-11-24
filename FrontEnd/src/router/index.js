@@ -81,7 +81,6 @@ const router = createRouter({
           component: () => import('@/components/spot/SpotPopular.vue'),
         },
       ],
-      
     },
     {
       path: '/places',

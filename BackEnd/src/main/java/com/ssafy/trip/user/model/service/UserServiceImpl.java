@@ -1,8 +1,16 @@
 package com.ssafy.trip.user.model.service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import com.ssafy.trip.email.EmailRepository;
+import com.ssafy.trip.email.exception.EmailErrorCode;
+import com.ssafy.trip.email.exception.EmailException;
+import com.ssafy.trip.email.model.EmailService;
 import com.ssafy.trip.jwt.JwtProps;
 import com.ssafy.trip.jwt.JwtProvider;
 import com.ssafy.trip.jwt.RefreshTokenRepository;
@@ -14,6 +22,8 @@ import com.ssafy.trip.user.exception.UserException;
 import com.ssafy.trip.user.model.LoginUser;
 import com.ssafy.trip.user.model.typehandlers.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.trip.user.model.User;
@@ -22,6 +32,7 @@ import com.ssafy.trip.user.model.mapper.UserMapper;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -29,6 +40,8 @@ public class UserServiceImpl implements UserService {
 	private final JwtProvider jwtProvider;
 	private final JwtProps jwtProps;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final EmailRepository emailRepository;
+	private final EmailService emailService;
 
 	@Override
 	public void joinUser(User user) {
@@ -44,10 +57,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String findpass(Map<String, Object> map) {
-		String passwd = userMapper.findpass(map);
-		if(passwd == null || passwd.equals("")) throw new UserException(UserErrorCode.UNMATCHED_INFO);
-		return passwd;
+	public String findpass(String userId) {
+		String pass = userMapper.findpass(userId);
+		if(pass == null || pass.equals("")) throw new UserException(UserErrorCode.UNMATCHED_INFO);
+		return pass;
 	}
 
 	@Override
@@ -63,7 +76,7 @@ public class UserServiceImpl implements UserService {
 		tmpUser.setUserId((String) map.get("userId"));
 		tmpUser.setUserPw((String) map.get("userPw"));
 		LoginUser u = userMapper.loginUser(tmpUser);
-		if(u == null) throw new UserException(UserErrorCode.UNMACHED_PASS);
+		if(u == null) throw new UserException(UserErrorCode.UNMATCHED_PASS);
 		userMapper.updateUserInfo(map);
 	}
 
@@ -78,7 +91,7 @@ public class UserServiceImpl implements UserService {
 		tmpUser.setUserId((String) map.get("userId"));
 		tmpUser.setUserPw((String) map.get("beforePass"));
 		LoginUser u = userMapper.loginUser(tmpUser);
-		if(u == null) throw new UserException(UserErrorCode.UNMACHED_PASS);
+		if(u == null) throw new UserException(UserErrorCode.UNMATCHED_PASS);
 		userMapper.changePass(map);
 	}
 
@@ -138,5 +151,36 @@ public class UserServiceImpl implements UserService {
 		response.addCookie(refreshCookie);
 
 		return user;
+	}
+
+	@Override
+	public void sendCodeToEmail(String toEmail) {
+		String title = "SimpleTrip 이메일 인증 번호";
+		String authCode = this.createCode();
+		emailService.sendEmail(toEmail, title, authCode);
+		emailRepository.save(toEmail, authCode);
+	}
+
+	private String createCode() {
+		int lenth = 6;
+		try {
+			Random random = SecureRandom.getInstanceStrong();
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < lenth; i++) {
+				builder.append(random.nextInt(10));
+			}
+			return builder.toString();
+		} catch (NoSuchAlgorithmException e) {
+			throw new EmailException(EmailErrorCode.CAN_NOT_MAKE_CODE);
+		}
+	}
+
+	@Override
+	public void verifiedCode(String email, String authCode) {
+		String getAuthCode = emailRepository.find(email)
+				.orElseThrow(() -> new UserException(UserErrorCode.UNMATCHED_CODE));
+		if(!authCode.equals(getAuthCode)){
+			throw new UserException(UserErrorCode.UNMATCHED_CODE);
+		}
 	}
 }
